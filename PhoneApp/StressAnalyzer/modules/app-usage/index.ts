@@ -5,12 +5,17 @@ import { NativeModulesProxy, EventEmitter, Subscription } from 'expo-modules-cor
 import AppUsageModule from './src/AppUsageModule';
 import AppUsageView from './src/AppUsageView';
 import { ChangeEventPayload, AppUsageViewProps } from './src/AppUsage.types';
+import { Context } from 'react';
 
 // Get the native constant value.
 export const PI = AppUsageModule.PI;
 
 export function hello(): string {
   return AppUsageModule.hello();
+}
+
+export function getUsageStats(context: any): [string, number][] {
+  return AppUsageModule.getUsageStats(context);
 }
 
 export async function setValueAsync(value: string) {
