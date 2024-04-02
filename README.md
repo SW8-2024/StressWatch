@@ -6,8 +6,14 @@ SW8 semester project
 ```bash
 npm install
 ```
-2. Start expo dev server in tunnel mode. 
-Then connect over proxy URL, usefull for restrictive network conditions.
+Install JDK 17 and update JAVA_HOME
+Install adnroid APK and update ANDROID_HOME
+2. Build modules
 ```bash
-npx expo start --tunnel
+npx expo prebuild --clean
+```
+3. Have emulator or connected phone with USB debugging enabled
+4. Run project
+```bash
+npx expo run:android
 ```

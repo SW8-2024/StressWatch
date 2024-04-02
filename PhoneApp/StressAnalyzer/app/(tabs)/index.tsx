@@ -1,11 +1,11 @@
 import { StyleSheet } from 'react-native';
-import { hello } from '@/modules/app-usage';
+import { hello, getUsageStats } from '@/modules/app-usage';
 import EditScreenInfo from '@/components/EditScreenInfo';
 import { Text, View } from '@/components/Themed';
 import { useContext } from 'react';
 
 export default function TabOneScreen() {
-  let a = hello();
+  let a = getUsageStats();
   return (
     <View style={styles.container}>
       <Text style={styles.title}> {a} Tab iksajdasfdsfdsfsdOne</Text>

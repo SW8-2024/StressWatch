@@ -16,14 +16,16 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.emilnb.StressAnalyzer"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.emilnb.StressAnalyzer"
+      "package": "com.emilnb.StressAnalyzer",
+      "permissions": ["android.permission.PACKAGE_USAGE_STATS", "android.permission.CAMERA","android.permission.RECORD_AUDIO"]
     },
     "web": {
       "bundler": "metro",

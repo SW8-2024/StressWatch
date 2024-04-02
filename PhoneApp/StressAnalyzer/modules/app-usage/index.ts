@@ -14,8 +14,12 @@ export function hello(): string {
   return AppUsageModule.hello();
 }
 
-export function getUsageStats(context: any): [string, number][] {
-  return AppUsageModule.getUsageStats(context);
+// export function getUsageStats(context: any): [string, number][] {
+//   return AppUsageModule.getUsageStats(context);
+// }
+
+export function getUsageStats(): string {
+  return AppUsageModule.getUsageStats();
 }
 
 export async function setValueAsync(value: string) {
