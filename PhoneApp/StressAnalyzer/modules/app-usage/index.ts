@@ -4,32 +4,16 @@ import { NativeModulesProxy, EventEmitter, Subscription } from 'expo-modules-cor
 // and on native platforms to AppUsage.ts
 import AppUsageModule from './src/AppUsageModule';
 import AppUsageView from './src/AppUsageView';
-import { ChangeEventPayload, AppUsageViewProps } from './src/AppUsage.types';
-import { Context } from 'react';
+import { UsageDataEvent } from './src/AppUsage.types';
 
-// Get the native constant value.
-export const PI = AppUsageModule.PI;
-
-export function hello(): string {
-  return AppUsageModule.hello();
-}
-
-// export function getUsageStats(context: any): [string, number][] {
-//   return AppUsageModule.getUsageStats(context);
-// }
-
-export function getUsageStats(): string {
-  return AppUsageModule.getUsageStats();
-}
-
-export async function setValueAsync(value: string) {
-  return await AppUsageModule.setValueAsync(value);
+export async function getUsageStatsAsync(startTime: number, endTime: number) {
+  AppUsageModule.getUsageStatsAsync(startTime, endTime);
 }
 
 const emitter = new EventEmitter(AppUsageModule ?? NativeModulesProxy.AppUsage);
 
-export function addChangeListener(listener: (event: ChangeEventPayload) => void): Subscription {
-  return emitter.addListener<ChangeEventPayload>('onChange', listener);
+export function addChangeListener(listener: (event: any) => void): Subscription {
+  return emitter.addListener<UsageDataEvent>('usageDataEvent', listener);
 }
 
-export { AppUsageView, AppUsageViewProps, ChangeEventPayload };
+export { AppUsageView };

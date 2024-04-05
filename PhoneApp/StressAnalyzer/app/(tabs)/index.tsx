@@ -1,14 +1,30 @@
 import { StyleSheet } from 'react-native';
-import { hello, getUsageStats } from '@/modules/app-usage';
+import { getUsageStatsAsync, addChangeListener } from '@/modules/app-usage';
 import EditScreenInfo from '@/components/EditScreenInfo';
 import { Text, View } from '@/components/Themed';
-import { useContext } from 'react';
+import { useEffect, useState } from 'react';
 
 export default function TabOneScreen() {
-  let a = getUsageStats();
+  const [usageStats, setUsageStats] = useState<[UsageData]>();
+
+  // export function addClipboardListener(listener: (event) => void): Subscription {
+  //   return emitter.addListener('onClipboardChanged', listener);
+  // }
+  useEffect(() => {
+    getUsageStatsAsync(Date.now() - 345600000, Date.now());    
+    addChangeListener(onUsageData);
+    // return () => subscription.remove();
+  }, [setUsageStats]);
+
+  const onUsageData = (event: any) => {
+    let data = event.nativeEvent;
+    console.log(event);
+  }
+
+  
   return (
     <View style={styles.container}>
-      <Text style={styles.title}> {a} Tab iksajdasfdsfdsfsdOne</Text>
+      <Text style={styles.title}> Tab iksajdasfdsfdsfsdOne</Text>
       <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
       <EditScreenInfo path="app/(tabs)/index.tsx" />
     </View>

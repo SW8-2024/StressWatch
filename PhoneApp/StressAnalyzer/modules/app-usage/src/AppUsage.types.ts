@@ -1,7 +1,6 @@
-export type ChangeEventPayload = {
-  value: string;
-};
-
-export type AppUsageViewProps = {
-  name: string;
+export type UsageDataEvent = {
+  success: boolean,
+  data: (string|number)[][],
+  start: number,
+  end: number;
 };
