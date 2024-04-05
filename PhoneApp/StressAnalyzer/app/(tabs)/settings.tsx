@@ -4,12 +4,13 @@ import { useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function SettingsScreen() {
-  const [apiUrl, setApiUrl] = useState('mlnfgl')
+  const [apiUrl, setApiUrl] = useState('')
 
   useEffect(() => {
     try {
-      AsyncStorage.getItem('api-url').then((value) => {
+      AsyncStorage.getItem('api-url').then((value : string | null) => {
         if (value !== null) {
+          console.log('item', value)
           setApiUrl(value)
         }
       })
@@ -29,20 +30,6 @@ export default function SettingsScreen() {
 
   return (
     <View style={styles.container}>
-      <View style={styles.api}>
-        <Text style={styles.label}>API URL</Text>
-        <TextInput
-              style={styles.inputField}
-              value={apiUrl}
-              onChangeText={(text:string) => setApiUrl(text)}/>
-      </View>
-      <View style={styles.api}>
-        <Text style={styles.label}>API URL</Text>
-        <TextInput
-              style={styles.inputField}
-              value={apiUrl}
-              onChangeText={(text:string) => storeData(text)}/>
-      </View>
       <View style={styles.api}>
         <Text style={styles.label}>API URL</Text>
         <TextInput
@@ -68,6 +55,9 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   inputField: {
+    backgroundColor: '#555555',
+    color:'white',
+    borderRadius: 8,
     fontSize: 20,
     fontWeight: 'bold',
     height: 40,

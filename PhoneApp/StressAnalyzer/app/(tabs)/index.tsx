@@ -1,81 +1,31 @@
 import { FlatList, Pressable, StyleSheet, useColorScheme } from 'react-native';
 import { Text, View } from '@/components/Themed';
-import { BarChart } from "react-native-chart-kit";
-import { Dimensions, Image } from "react-native";
-import { ChartData } from 'react-native-chart-kit/dist/HelperTypes';
+import { BarChart, barDataItem } from "react-native-gifted-charts";
+import { Image } from "react-native";
 import { Link } from 'expo-router';
 import { useState } from 'react';
 import { FontAwesome5 } from '@expo/vector-icons';
 import Colors from '@/constants/Colors';
+import { graphData, notificationData, screenTimeData } from '@/constants/DummyData';
 
-const screenHeight = Dimensions.get("window").height/3;
-const screenWidth = Dimensions.get("window").width-20;
-const graphData = {
-  labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
-  datasets: [
-    {
-      data: [20, 45, 28, 80, 99, 43, 67, 45, 28, 80, 99, 43, 67, 45, 28, 80, 99, 43, 67, 45, 28, 80, 99, 43],
-    }
-  ]
-};
-const screenTimeData = [
-  {
-    "image": require("../../assets/images/TinderImage.png"),
-    "name": "Tinder",
-    "averageStress": 58,
-    "usage": 403
-  },
-  {
-    "image": require("../../assets/images/TwitterImage.png"),
-    "name": "Twitter",
-    "averageStress": 34,
-    "usage": 3163
-  }
-]
-const notificationData = [
-  {
-    "topic": "Bouldering",
-    "averageStress": 81,
-    "amount": 62
-  },
-  {
-    "topic": "Dinner plans",
-    "averageStress": 22,
-    "amount": 11
-  }
-]
-
-const chartConfig = {
-  backgroundGradientFrom: "#1E2923",
-  backgroundGradientFromOpacity: 0,
-  backgroundGradientTo: "#555555",
-  backgroundGradientToOpacity: 0.2,
-  decimalPlaces: 0,
-  color: (opacity = 1) => `rgba(26, 255, 0, ${opacity})`,
-  labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-  strokeWidth: 2,
-  barPercentage: 0.25,
-  useShadowColorFromDataset: false
-};
-
-const dataToColoredData = (data:ChartData) : ChartData => {
-  const coloredData:ChartData = data
-  coloredData.datasets[0].colors = data.datasets[0].data.map(point => valueToColor(point))
+const dataToColoredData = (data:barDataItem[]) : barDataItem[] => {
+  var coloredData:barDataItem[] = data
+  coloredData = coloredData.map(item => {item.frontColor = valueToColor(item.value); return item})
   return coloredData
 }
 
-const valueToColor = (value:number) : ((opacity:number) => string) => {
+const valueToColor = (value:number) : string => {
   if(value < 44){
-    return ((opacity = 1) => '#36890E')
+    return '#36890E'
   }
   else if (value < 60){
-    return ((opacity = 1) => '#CFA613')
+    return '#CFA613'
   }
   else if (value < 80){
-    return ((opacity = 1) => '#AF2C03')
+    return '#AF2C03'
   }
   else{
-    return ((opacity = 1) => '#AF0303')
+    return '#AF0303'
   }
 }
 
@@ -162,18 +112,21 @@ export default function HomeScreen() {
       <View style={{flex: 3}}>
         <View style={styles.graphContainer}>
           <View style={styles.graph}>
-            <BarChart
-              data={coloredData}
-              width={screenWidth}
-              height={screenHeight}
-              yAxisLabel=""
-              yAxisSuffix=''
-              chartConfig={chartConfig}
-              fromZero={true}
-              withCustomBarColorFromData={true}
-              showBarTops={false}
-              flatColor={true}
-            />
+            <BarChart 
+            data={coloredData}
+            roundedTop
+            barWidth={8}
+            yAxisColor={'white'}
+            yAxisTextStyle={{color: 'white'}}
+            xAxisColor={'white'}
+            xAxisLabelTextStyle={{color: 'white', marginLeft: -7}}
+            isAnimated
+            noOfSections={5}
+            spacing={2}
+            onPress = {(item:barDataItem,index:number)=>console.log('item',item)}
+            yAxisLabelWidth={30}
+            labelWidth={15}
+            initialSpacing={0}/>
           </View>
         </View>
       </View>
@@ -225,8 +178,8 @@ const styles = StyleSheet.create({
   graph: {
     flex: 1,
     marginTop: 20,
-    marginLeft: 10,
-  },
+    backgroundColor: 'black',
+ },
   appsContainer: {
     flex: 1,
     margin: 10,
