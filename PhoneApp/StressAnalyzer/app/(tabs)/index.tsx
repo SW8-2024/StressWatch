@@ -1,26 +1,19 @@
 import { StyleSheet } from 'react-native';
-import { getUsageStatsAsync, addChangeListener } from '@/modules/app-usage';
+import { getUsageStatsAsync, addUsageDataListener } from '@/modules/app-usage';
 import EditScreenInfo from '@/components/EditScreenInfo';
 import { Text, View } from '@/components/Themed';
 import { useEffect, useState } from 'react';
+import * as appUsage from '@/helpers/appUsage';
 
 export default function TabOneScreen() {
-  const [usageStats, setUsageStats] = useState<[UsageData]>();
-
-  // export function addClipboardListener(listener: (event) => void): Subscription {
-  //   return emitter.addListener('onClipboardChanged', listener);
-  // }
   useEffect(() => {
-    getUsageStatsAsync(Date.now() - 345600000, Date.now());    
-    addChangeListener(onUsageData);
-    // return () => subscription.remove();
-  }, [setUsageStats]);
+    appUsage.attachHandler();
+    // appUsage.getUsageDataLastInterval();
+    // appUsage.getUsageDataLastInterval();
+    // appUsage.printLastMinutes(600);
+    appUsage.getEventData()
 
-  const onUsageData = (event: any) => {
-    let data = event.nativeEvent;
-    console.log(event);
-  }
-
+  }, []);
   
   return (
     <View style={styles.container}>
