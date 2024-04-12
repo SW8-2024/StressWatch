@@ -1,4 +1,4 @@
-import  * as hello from "@/modules/app-usage/src/AppUsage.types";
+import  * as moduleTypes from "@/modules/app-usage/src/AppUsage.types";
 
 declare global {
     type UsageData = {
@@ -34,5 +34,5 @@ declare global {
         endTimes: number[],
     }
 
-    type UsageDataEvent = hello.UsageDataEvent;
+    type UsageDataEvent = moduleTypes.UsageDataEvent;
 }

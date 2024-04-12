@@ -14,7 +14,7 @@ export const attachHandler = () => {
 //Deprecated because UsageData gives weird data because of Android's API kept in case it might be needed
 function onUsageData(response : UsageDataEvent, callback? : (data : UsageData[]) => void){
     if (!response.success){
-        console.log("We do not have persmission for usageStats"); //Possibly show an error message in app
+        console.log("We do not have permission for usageStats"); //Possibly show an error message in app
     }else{
         let start = response.start;
         let end = response.end;       
@@ -39,7 +39,7 @@ export const getEventDataByMilli = async (startTime : number, endTime : number) 
 
 // Idea is that the database is updated with each call
 export const getEventDataForToday = async () => {
-    let startDate = new Date(Date.now())
+    let startDate = new Date()
     startDate.setHours(0)
     startDate.setMinutes(0)
     startDate.setMilliseconds(0)
