@@ -13,6 +13,7 @@ import java.time.ZonedDateTime
 import java.time.LocalDate
 import java.time.ZoneId 
 import java.time.Instant
+
 class AppUsageModule : Module() {
 
   // Helper class to keep track of all of the stats 
@@ -30,29 +31,8 @@ class AppUsageModule : Module() {
     // Defines event names that the module can send to JavaScript.
     Events("usageDataEvent")
 
-
-    // Defines a JavaScript function that always returns a Promise and whose native code
-    // is by default dispatched on the different thread than the JavaScript runtime runs on.
-    AsyncFunction("getUsageStatsAsync") { start: Long, end: Long ->
-      val hasPermission = hasUsageStatsPermission()
-      val retStats = mutableListOf<Pair<String,Long>>()
-      if (hasPermission){
-        val usageStatsManager = context.getSystemService(Context.USAGE_STATS_SERVICE) as UsageStatsManager
-        val stats = usageStatsManager.queryAndAggregateUsageStats(start, end)
-        stats.forEach {entry ->
-          retStats.add(Pair(entry.key,entry.value.getTotalTimeInForeground()))
-        }
-      }
-  
-      sendEvent("usageDataEvent",mapOf(
-          "success" to hasPermission,
-          "data" to retStats,
-          "start" to start,
-          "end" to end
-        ))
-    }
-    // Maybe also get queryconfigurations
-    Function("getUsageStatsAsync2") { start: Long, end: Long -> 
+    // Returns usagestats in interval and both asyncronously returns the result and sends a usageDataEvent with the data.
+    Function("getUsageStatsAsync") { start: Long, end: Long -> 
       val hasPermission = hasUsageStatsPermission()
       val retStats = mutableListOf<Pair<String,Long>>()
       if (hasPermission){
@@ -77,21 +57,20 @@ class AppUsageModule : Module() {
     }
 
     /**
-   * Returns the stats for the [date] (defaults to today) 
+   * Returns the relevant events in the given time interval
    */
-    Function("getEventStats") {
+    Function("getEventStatsInInterval") { startTime : Long, endTime : Long ->
       if (!hasUsageStatsPermission()){
         return@Function mapOf("success" to false)
-      } 
-      // The timezones we'll need 
-      val date = LocalDate.now()
-      val utc = ZoneId.of("UTC")
-      val defaultZone = ZoneId.systemDefault()
-
-      // Set the starting and ending times to be midnight in UTC time
-      val startDate = date.atStartOfDay(defaultZone).withZoneSameInstant(utc)
-      val start = startDate.toInstant().toEpochMilli()
-      val end = startDate.plusDays(1).toInstant().toEpochMilli()
+      }
+      
+      //If query end is in the future set the end to now.
+      val start = startTime
+      var end = endTime
+      val now : Long = Instant.now().toEpochMilli()
+      if (end > now){ 
+        end = now
+      }
 
       // This will keep a map of all of the events per package name 
       val sortedEvents = mutableMapOf<String, MutableList<UsageEvents.Event>>()

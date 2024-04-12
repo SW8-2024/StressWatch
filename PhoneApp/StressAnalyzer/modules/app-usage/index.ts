@@ -14,8 +14,8 @@ export async function getUsageStatsAsync2(startTime: number, endTime: number) {
   return AppUsageModule.getUsageStatsAsync2(startTime, endTime);
 }
 
-export function getEventStats() {
-  return AppUsageModule.getEventStats()
+export async function getEventStatsInInterval(startTime: number, endTime: number) {
+  return AppUsageModule.getEventStatsInInterval(startTime, endTime)
 }
 
 const emitter = new EventEmitter(AppUsageModule ?? NativeModulesProxy.AppUsage);

@@ -8,18 +8,26 @@ declare global {
         end: number
     }
     
-    type AppUsage = [string, number];
+    type UsageDataPerApp = [string, number];
 
-    //packageName, startTimes, endTimes, query start, query end
-    // type EventUsage = [[string, number[], number[]],number,number];
-
-    type EventUsageData = {
+    type EventUsageRawData = {
         success: boolean,
         packageTimes: EventUsage[],
         queryStart: number,
         queryEnd: number,
     }
 
+    type EventUsageTransformedData = {
+        name : string,
+        sessions : Session[],
+        timeSpent : number
+    }
+
+    type Session = {
+        start : number,
+        end : number, 
+        length : number
+    }
     type EventUsage = {
         packageName: string,
         startTimes: number[],

@@ -4,15 +4,11 @@ import EditScreenInfo from '@/components/EditScreenInfo';
 import { Text, View } from '@/components/Themed';
 import { useEffect, useState } from 'react';
 import * as appUsage from '@/helpers/appUsage';
-
+import {TIME} from '@/constants/Time';
 export default function TabOneScreen() {
   useEffect(() => {
-    appUsage.attachHandler();
-    // appUsage.getUsageDataLastInterval();
-    // appUsage.getUsageDataLastInterval();
-    // appUsage.printLastMinutes(600);
-    appUsage.getEventData()
-
+    appUsage.getEventDataByMilli(Date.now() - TIME.HOUR, Date.now())
+    appUsage.printEventDataByDate(new Date(2024,3,11), new Date(2024,3,12))
   }, []);
   
   return (
