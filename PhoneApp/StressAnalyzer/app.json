@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "StressAnalyzer",
-    "slug": "StressAnalyzer",
+    "name": "ChillChaser",
+    "slug": "ChillChaser",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -16,13 +16,15 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.chillchasers.ChillChaser"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.chillchasers.ChillChaser"      
     },
     "web": {
       "bundler": "metro",

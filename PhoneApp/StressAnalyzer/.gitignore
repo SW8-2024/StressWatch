@@ -25,12 +25,24 @@ yarn-debug.*
 yarn-error.*
 
 # Android
-android/
+*.apk
+*.hprof
+ReactAndroid-temp.aar
+
+# IDEA / Android Studio
+*.iml
+.gradle
+.idea
+.vscode
 
 # macOS
 .DS_Store
 *.pem
 
+# Prebuilds
+build/
+/android/
+/ios/
 # local env files
 .env*.local
 
