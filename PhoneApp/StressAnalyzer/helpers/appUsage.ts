@@ -1,5 +1,5 @@
 import { TIME } from '@/constants/Time';
-import { getUsageStatsAsync, addUsageDataListener, getUsageStatsAsync2, getEventStatsInInterval } from '@/modules/app-usage';
+import { getUsageStatsAsync, addUsageDataListener, getEventStatsInInterval } from '@/modules/app-usage';
 
 export const getUsageDataByMilliseconds = (start: number, end: number) => {
     getUsageStatsAsync(start,end);

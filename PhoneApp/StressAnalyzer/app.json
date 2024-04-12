@@ -24,8 +24,7 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.emilnb.StressAnalyzer",
-      "permissions": ["android.permission.PACKAGE_USAGE_STATS", "android.permission.CAMERA","android.permission.RECORD_AUDIO"]
+      "package": "com.emilnb.StressAnalyzer"      
     },
     "web": {
       "bundler": "metro",

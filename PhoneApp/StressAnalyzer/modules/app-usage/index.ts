@@ -6,12 +6,7 @@ import AppUsageModule from './src/AppUsageModule';
 import { UsageDataEvent } from './src/AppUsage.types';
 
 export async function getUsageStatsAsync(startTime: number, endTime: number) {
-  AppUsageModule.getUsageStatsAsync(startTime, endTime);
-}
-
-//Superior
-export async function getUsageStatsAsync2(startTime: number, endTime: number) {
-  return AppUsageModule.getUsageStatsAsync2(startTime, endTime);
+  return AppUsageModule.getUsageStatsAsync(startTime, endTime);
 }
 
 export async function getEventStatsInInterval(startTime: number, endTime: number) {
