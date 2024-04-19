@@ -1,7 +1,8 @@
-import { StyleSheet, TextInput } from 'react-native';
+import { Pressable, StyleSheet, TextInput } from 'react-native';
 import { Text, View } from '@/components/Themed';
 import { useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {logout} from "@/helpers/Database"
 
 export default function SettingsScreen() {
   const [apiUrl, setApiUrl] = useState('')
@@ -36,7 +37,13 @@ export default function SettingsScreen() {
               style={styles.inputField}
               value={apiUrl}
               onChangeText={(text:string) => storeData(text)}/>
+              <Pressable 
+          style={styles.buttonAlt} 
+          onPress={() => logout()}>
+          <Text>Log out</Text>        
+        </Pressable>
       </View>
+      
     </View>
   );
 }
@@ -65,5 +72,16 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     padding: 10,
     width: '80%'
+  },
+  buttonAlt: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 32,
+    borderRadius: 4,
+    elevation: 3,
+    width: 150,      
+    backgroundColor: 'gray',
+    margin: 8,
   },
 });

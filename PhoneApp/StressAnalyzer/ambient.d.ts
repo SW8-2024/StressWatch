@@ -20,12 +20,13 @@ declare global {
     type EventUsageTransformedData = {
         name : string,
         sessions : Session[],
-        timeSpent : number
+        dataFrom: DateTime;
+        dataUntil: DateTime;
     }
 
     type Session = {
-        start : number,
-        end : number, 
+        start : DateTime,
+        end : dateTime, 
         length : number
     }
     type EventUsage = {

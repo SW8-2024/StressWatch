@@ -7,6 +7,7 @@ import { useState } from 'react';
 import { FontAwesome5 } from '@expo/vector-icons';
 import Colors from '@/constants/Colors';
 import { graphData, notificationData, screenTimeData } from '@/constants/DummyData';
+import * as DBHelpers from '@/helpers/Database';
 
 const dataToColoredData = (data:barDataItem[]) : barDataItem[] => {
   var coloredData:barDataItem[] = data
@@ -33,9 +34,10 @@ const coloredData = dataToColoredData(graphData)
 
 export default function HomeScreen() {
   const colorScheme = useColorScheme() ?? 'light';
+  const [date, setDate] = useState(new Date());
 
-  const [date, setDate] = useState(new Date())
-
+  DBHelpers.test();
+  
   const showPreviousMonth = () => {
     setDate(prev => new Date(prev.setMonth(prev.getMonth()-1)))
   };

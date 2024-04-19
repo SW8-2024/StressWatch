@@ -58,8 +58,7 @@ export const printEventDataByDate = async (startDate : Date, endDate : Date) => 
     let totalTime : number = 0;
     console.log("Event data queried from: " + startDate.toLocaleDateString() + " to: " + endDate.toLocaleDateString() + " local time.");
     data.forEach((elem : EventUsageTransformedData) => {    
-        console.log("Starttimes, endtimes for " + elem.name + "With a total of: " + (elem.timeSpent / 1000 / 60).toFixed(2) + " minutes spent.")
-        totalTime += elem.timeSpent
+        console.log("Starttimes, endtimes for " + elem.name)        
         elem.sessions.forEach((elem: Session) => {        
             let text = "";        
             let start = new Date(elem.start)
@@ -109,7 +108,7 @@ const _getEventData = async (startTime : number, endTime : number) => {
             timeSpent = timeSpent + len
             return {start : val, end : end, length : len}
         })
-        transformedData.push({name : elem.packageName, sessions: sessions, timeSpent : timeSpent});                
+        transformedData.push({name : elem.packageName, sessions: sessions, dataFrom: startTime, dataUntil : Math.min(endTime, Date.now())});                
     })
     return transformedData
 }
