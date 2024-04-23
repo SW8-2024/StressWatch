@@ -7,6 +7,7 @@ import { useState } from 'react';
 import { FontAwesome5 } from '@expo/vector-icons';
 import Colors from '@/constants/Colors';
 import { graphData, notificationData, screenTimeData } from '@/constants/DummyData';
+import Card from '@/components/Card';
 
 const dataToColoredData = (data:barDataItem[]) : barDataItem[] => {
   var coloredData:barDataItem[] = data
@@ -131,24 +132,28 @@ export default function HomeScreen() {
         </View>
       </View>
       <View style={{flex: 2}}>
+        <View style={styles.containerLabelsContainer}><Text style={styles.containerLabelsText}>Today's Stress</Text></View>
+        <Card></Card>
+      </View>
+      <View style={{flex: 2}}>
         <View style={styles.containerLabelsContainer}><Text style={styles.containerLabelsText}>Apps</Text></View>
-        <View style={styles.appsContainer}>
+        <Card>
           <FlatList
             data={screenTimeData}
             renderItem={renderAppsItem}
             ListHeaderComponent={renderAppsHeader}
             stickyHeaderIndices={[0]}/>
-        </View>
+        </Card>
       </View>
       <View style={{flex: 2}}>
         <View style={styles.containerLabelsContainer}><Text style={styles.containerLabelsText}>Notifications</Text></View>
-        <View style={styles.notificationContainer}>
+        <Card>
           <FlatList
             data={notificationData}
             renderItem={renderNotificationItem}
             ListHeaderComponent={renderNotificationHeader}
             stickyHeaderIndices={[0]}/>
-        </View>
+        </Card>
       </View>
     </View>
   );
@@ -180,20 +185,6 @@ const styles = StyleSheet.create({
     marginTop: 20,
     backgroundColor: 'black',
  },
-  appsContainer: {
-    flex: 1,
-    margin: 10,
-    backgroundColor: '#555555',
-    borderRadius: 20,
-    overflow:'hidden',
-  },
-  notificationContainer: {
-    flex: 1,
-    margin: 10,
-    backgroundColor: '#555555',
-    borderRadius: 20,
-    overflow:'hidden',
-  },
   containerLabelsContainer: {
     justifyContent: 'center',
     alignItems: 'center',
@@ -214,4 +205,5 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+
 });
