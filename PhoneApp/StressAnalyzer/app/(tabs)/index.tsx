@@ -132,10 +132,6 @@ export default function HomeScreen() {
         </View>
       </View>
       <View style={{flex: 2}}>
-        <View style={styles.containerLabelsContainer}><Text style={styles.containerLabelsText}>Today's Stress</Text></View>
-        <Card></Card>
-      </View>
-      <View style={{flex: 2}}>
         <View style={styles.containerLabelsContainer}><Text style={styles.containerLabelsText}>Apps</Text></View>
         <Card>
           <FlatList
