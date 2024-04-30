@@ -1,10 +1,10 @@
 import {storeString, getString, clearStorage} from '@/helpers/AsyncStorage';
-import { Redirect } from 'expo-router';
 import { router } from 'expo-router';
+//To test locally run backend locally and use something like ngrok to connect on phone
 //ngrok http --domain=emerging-teaching-stag.ngrok-free.app 2345
 const serverLocation = 'https://emerging-teaching-stag.ngrok-free.app/';
 
-export async function sendUsageData(data : EventUsageTransformedData[]) {
+export async function sendUsageData(data : EventUsageTransformedData[]) {  
   let url : string = serverLocation + "api/DataCollection/app-usage";  
   let res : boolean = false;
   let [authorized, accessToken] = await checkIfAuthorized();
@@ -12,7 +12,7 @@ export async function sendUsageData(data : EventUsageTransformedData[]) {
     console.log("Not authorized to sendUsageData")
     await refreshAuthorization();
   }
-  else{ 
+  else{    
     await fetch(url, {
       method: 'POST',
       headers: {
@@ -20,12 +20,7 @@ export async function sendUsageData(data : EventUsageTransformedData[]) {
         'accept': '*/*',
         'Authorization': 'Bearer ' + accessToken
       },
-      // body: JSON.stringify(data),
-      body:JSON.stringify({
-        "from": "2024-04-19T11:15:24.980Z",
-        "to": "2024-04-19T11:15:24.980Z",
-        "appName": "string"
-      })
+      body: JSON.stringify(data),
     })
     .then((response : Response) => {
       if (response.status == 200){res = true;}
@@ -35,6 +30,34 @@ export async function sendUsageData(data : EventUsageTransformedData[]) {
   return res;
 }
 
+export async function receiveUsageData(){
+  let res = [];
+  let url : string = serverLocation + "api/DataCollection/app-usage";  
+  let [authorized, accessToken] = await checkIfAuthorized();
+  if (!authorized){
+    console.log("Not authorized to receiveUsageData")
+    await refreshAuthorization();
+  }
+  else{
+    res = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        // 'accept': '*/*',
+        'Authorization': 'Bearer ' + accessToken
+      },      
+    })
+    .then((response : Response) => {
+      if (response.status == 200){
+        return response.json();
+      }else{
+        return [];
+      }
+    })
+    .catch((error : any) => console.log("Error: " + error));
+  }
+  return res;
+}
 export async function register(email : string, password : string) : Promise<any>{
   let url = serverLocation + "register";
   let ret : any = new Response();
@@ -116,7 +139,13 @@ export async function login(email : string, password : string){
 export async function refreshAuthorization() : Promise<boolean>{
   let url = serverLocation + "refresh";
   let success = false;
-  // 'grant_type=refresh_token&refresh_token='+token
+
+  let authorizedUntil = await getString("authorizedUntil");
+  if (authorizedUntil == null || authorizedUntil == undefined || parseInt(authorizedUntil) < Date.now()){
+    console.log("Cannot refresh authorization");
+    return success;
+  }
+
   let refreshToken = await getString("refreshToken");
   if (refreshToken == null || refreshToken == undefined){
     return false;
@@ -146,11 +175,4 @@ export async function refreshAuthorization() : Promise<boolean>{
 export async function logout(){
   await clearStorage();
   router.replace("/login");
-}
-export async function test(){
-  while (!(await checkIfAuthorized())){
-
-  }
-  console.log("Usage data return: " + await sendUsageData([]));
-  
 }

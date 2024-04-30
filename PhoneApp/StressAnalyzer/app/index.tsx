@@ -13,17 +13,19 @@ export default function RedirectBasedOnLoginState() {
     const prepare : any = async () => {
       let networkState = await Network.getNetworkStateAsync();
       //If token is valid go directly to logged in screen
-      //If not offline go directly to logged in screen 
-      //If neither then first check if refreshToken is valid
+      //If online and token is invalid try to refresh and log in if succesful
+      //If offline and a token exists log in
       if (await getString("authorizedUntil")
-        .then((res : any) => {return typeof(res) == "string" && res > Date()})
-      ){
+        .then((res : any) => {
+          return typeof(res) == "string" && parseInt(res) > Date.now()
+      })
+      ){        
         refreshAuthorization();
         setLoggedIn(true);
       }
-      else if (networkState.isInternetReachable){
+      else if (networkState.isInternetReachable){        
         setLoggedIn(await refreshAuthorization());
-      }else{
+      }else{        
         setLoggedIn(typeof(await getString("accessToken")) == "string");
       }
       setAppIsReady(true);

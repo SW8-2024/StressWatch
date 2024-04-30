@@ -3,11 +3,12 @@ import { Text, View } from '@/components/Themed';
 import { BarChart, barDataItem } from "react-native-gifted-charts";
 import { Image } from "react-native";
 import { Link } from 'expo-router';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { FontAwesome5 } from '@expo/vector-icons';
 import Colors from '@/constants/Colors';
 import { graphData, notificationData, screenTimeData } from '@/constants/DummyData';
 import * as DBHelpers from '@/helpers/Database';
+import { getEventDataForToday } from '@/helpers/appUsage';
 
 const dataToColoredData = (data:barDataItem[]) : barDataItem[] => {
   var coloredData:barDataItem[] = data
@@ -35,8 +36,6 @@ const coloredData = dataToColoredData(graphData)
 export default function HomeScreen() {
   const colorScheme = useColorScheme() ?? 'light';
   const [date, setDate] = useState(new Date());
-
-  DBHelpers.test();
   
   const showPreviousMonth = () => {
     setDate(prev => new Date(prev.setMonth(prev.getMonth()-1)))

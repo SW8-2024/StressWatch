@@ -1,43 +1,19 @@
 import { TIME } from '@/constants/Time';
 import { getUsageStatsAsync, addUsageDataListener, getEventStatsInInterval } from '@/modules/app-usage';
-
-export const getUsageDataByMilliseconds = (start: number, end: number) => {
-    getUsageStatsAsync(start,end);
-};
-
-
-//Related to onUsageData
-export const attachHandler = () => {
-    addUsageDataListener(onUsageData);
-}
-
-//Deprecated because UsageData gives weird data because of Android's API kept in case it might be needed
-function onUsageData(response : UsageDataEvent, callback? : (data : UsageData[]) => void){
-    if (!response.success){
-        console.log("We do not have permission for usageStats"); //Possibly show an error message in app
-    }else{
-        let start = response.start;
-        let end = response.end;       
-        //Filter out apps that have not been actively used        
-        response.data = response.data.filter((val : UsageDataPerApp) => {
-            return val[1] != 0;
-        });
-     
-        //Send data to server
-    }
-}
+import { sendUsageData } from './Database';
 
 // Idea is that the database is updated with each call
 export const getEventDataByMilli = async (startTime : number, endTime : number) => {        
     let data = await _getEventData(startTime, endTime);
     if (data.length != 0){
+        return sendUsageData(data);
         // Query/update server and local database
     }else{
+        return false;
         //No results either because query times are wrong, missing permissions or android has deleted the events for the time frame
     }
 }
 
-// Idea is that the database is updated with each call
 export const getEventDataForToday = async () => {
     let startDate = new Date()
     startDate.setHours(0)
@@ -46,34 +22,27 @@ export const getEventDataForToday = async () => {
     return getEventDataByMilli(startDate.valueOf(), Date.now())
 }
 
-// Idea is that the database is updated with each call
 export const getEventDataByDate = async (startDate : Date, endDate : Date) => {
-    return getEventDataByMilli(startDate.valueOf(), endDate.valueOf())
+    return getEventDataByMilli(startDate.valueOf(), endDate.valueOf());
+    
 }
 
 // Prints the sessions and total time for each application meant for debugging / check that it works for a specific phone
 // Note that "background" services might inflate the numbers
 export const printEventDataByDate = async (startDate : Date, endDate : Date) => {
-    let data : EventUsageTransformedData[] = await _getEventData(startDate.valueOf(), endDate.valueOf());
-    let totalTime : number = 0;
+    let data : EventUsageTransformedData[] = await _getEventData(startDate.valueOf(), endDate.valueOf());    
     console.log("Event data queried from: " + startDate.toLocaleDateString() + " to: " + endDate.toLocaleDateString() + " local time.");
     data.forEach((elem : EventUsageTransformedData) => {    
-        console.log("Starttimes, endtimes for " + elem.name)        
+        console.log("Starttimes, endtimes for " + elem.appName)        
         elem.sessions.forEach((elem: Session) => {        
-            let text = "";        
-            let start = new Date(elem.start)
-            text += start.toLocaleTimeString()               
-            text += "   |   "
-            let end = new Date(elem.end)
-            text += end.toLocaleTimeString()              
+            let text = "";                    
+            text += elem.from.toLocaleTimeString()               
+            text += "   |   "            
+            text += elem.to.toLocaleTimeString()              
             console.log(text)
         })
     });
-    console.log(totalTime)
-    let hours = totalTime / TIME.HOUR
-    let minutes = (totalTime % TIME.HOUR) / TIME.MINUTE
-    console.log("A total of: " + hours.toFixed(0) + " hours and " + minutes.toFixed(1) + " minutes on: " + data.length + " applications.")
-
+    console.log("A total of " + data.length + " applications.")
 }
 
 const _getEventData = async (startTime : number, endTime : number) => {
@@ -97,18 +66,27 @@ const _getEventData = async (startTime : number, endTime : number) => {
         if (endTimes.length == 0 || endTimes[endTimes.length - 1] < startTimes[startTimes.length - 1]){
             endTimes.push(eventData.queryEnd);
         }        
-        
+     
+        //Sessions that are interrupted by less than a second are still counted as one session
+        let sessions = [];
         let endIndex = 0;
-        let sessions = startTimes.map((val : number, index : number, array : number[]) => {
-            let nextVal = index + 1 >= array.length ? undefined : startTimes[index + 1];
-            let end = endTimes[endIndex]; // Should never be out of bounds        
-            let len = end - val
-            //Any sequential endtimes are seen as duplicates and skipped over
-            while (nextVal != undefined && nextVal > endTimes[++endIndex]){}            
-            timeSpent = timeSpent + len
-            return {start : val, end : end, length : len}
-        })
-        transformedData.push({name : elem.packageName, sessions: sessions, dataFrom: startTime, dataUntil : Math.min(endTime, Date.now())});                
+        for (let i = 0; i < startTimes.length;){            
+            let val = startTimes[i];
+            let nextVal = ++i >= startTimes.length ? undefined : startTimes[i];
+            while (nextVal != undefined && nextVal - val < TIME.SECOND){                
+                val = nextVal;
+                nextVal = ++i >= startTimes.length ? undefined : startTimes[i];
+            }
+            let end = endTimes[endIndex]; // Should never be out of bounds                    
+            //Any sequential endtimes are seen as duplicates and skipped over            
+            while (end < val || (nextVal != undefined && nextVal > endTimes[endIndex + 1])){
+                endIndex++;                
+                end = endTimes[endIndex];
+            }                
+            sessions.push({from : new Date(val), to : new Date(end)});
+        }
+            
+        transformedData.push({from: new Date(startTime), to : new Date(Math.min(endTime, Date.now())), sessions: sessions, appName : elem.packageName });                
     })
     return transformedData
 }
