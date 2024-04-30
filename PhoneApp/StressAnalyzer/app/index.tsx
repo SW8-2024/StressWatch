@@ -1,5 +1,5 @@
 import { Redirect, SplashScreen } from 'expo-router';
-import { Component, useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import {getString} from "@/helpers/AsyncStorage";
 import {refreshAuthorization} from "@/helpers/Database";
 import * as Network from 'expo-network';

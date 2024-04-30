@@ -6,7 +6,7 @@ import { sendUsageData } from './Database';
 export const getEventDataByMilli = async (startTime : number, endTime : number) => {        
     let data = await _getEventData(startTime, endTime);
     if (data.length != 0){
-        return sendUsageData(data);
+        return await sendUsageData(data);
         // Query/update server and local database
     }else{
         return false;
@@ -19,11 +19,11 @@ export const getEventDataForToday = async () => {
     startDate.setHours(0)
     startDate.setMinutes(0)
     startDate.setMilliseconds(0)
-    return getEventDataByMilli(startDate.valueOf(), Date.now())
+    return await getEventDataByMilli(startDate.valueOf(), Date.now())
 }
 
 export const getEventDataByDate = async (startDate : Date, endDate : Date) => {
-    return getEventDataByMilli(startDate.valueOf(), endDate.valueOf());
+    return await getEventDataByMilli(startDate.valueOf(), endDate.valueOf());
     
 }
 

@@ -3,7 +3,7 @@ import { Text, View } from '@/components/Themed';
 import { BarChart, barDataItem } from "react-native-gifted-charts";
 import { Image } from "react-native";
 import { Link } from 'expo-router';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { FontAwesome5 } from '@expo/vector-icons';
 import Colors from '@/constants/Colors';
 import { graphData, notificationData, screenTimeData } from '@/constants/DummyData';
