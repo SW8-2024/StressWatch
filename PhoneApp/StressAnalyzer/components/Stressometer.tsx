@@ -4,7 +4,7 @@ import Svg, { Text, Path, Defs, LinearGradient, Stop, Line, Circle } from 'react
 import * as d3 from 'd3';
 
 
-const Stressometer = ({ stressValue }) => {
+const Stressometer = ({ stressValue }: { stressValue: number }) => {
     const width = 100;
     const height = 100;
     const radius = Math.min(width, height) / 2;
