@@ -34,9 +34,8 @@ const coloredData = dataToColoredData(graphData)
 
 export default function HomeScreen() {
   const colorScheme = useColorScheme() ?? 'light';
-
-  const [date, setDate] = useState(new Date())
-
+  const [date, setDate] = useState(new Date());
+  
   const showPreviousMonth = () => {
     setDate(prev => new Date(prev.setMonth(prev.getMonth()-1)))
   };
