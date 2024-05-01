@@ -216,12 +216,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   todayStressCard: {
-    flex: 1,
     flexDirection: 'row',
     justifyContent: 'space-evenly',
     alignItems: 'center',
     backgroundColor: 'transparent',
-    margin: 40,
+    padding: 10,
   },
   todayStressCardText: {
     backgroundColor: 'transparent',
