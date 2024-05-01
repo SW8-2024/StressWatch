@@ -1,30 +1,36 @@
 import  * as moduleTypes from "@/modules/app-usage/src/AppUsage.types";
 
 declare global {
-    type EventUsageRawData = {
+    interface EventUsageRawData {
         success: boolean,
         packageTimes: EventUsage[],
         queryStart: number,
         queryEnd: number,
     }
 
-    type EventUsage = {
+    interface EventUsage {
         packageName: string,
         startTimes: number[],
         endTimes: number[],
     }
 
-    type EventUsageTransformedData = {
+    interface EventUsageTransformedData {
         from: DateTime;
         to: DateTime;
-        sessions : Session[],
-        appName : string,
+        sessions: Session[],
+        appName: string,
     }
 
-    type Session = {
-        from : DateTime,
-        to : dateTime,         
+    interface Session {
+        from: DateTime,
+        to: dateTime,         
     }
    
+    interface AppUsageResponse {
+        id: number,
+        appName: string,
+        from: DateTime,
+        to: DateTime,
+    }
     type UsageDataEvent = moduleTypes.UsageDataEvent;
 }
