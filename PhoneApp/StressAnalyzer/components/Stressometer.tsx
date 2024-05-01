@@ -39,7 +39,9 @@ const Stressometer = ({ stressValue }) => {
                 <Defs>
                     <LinearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
                         <Stop offset="0%" stopColor="#24FF00" />
+                        <Stop offset="25%" stopColor="#FAFF00" />
                         <Stop offset="50%" stopColor="#FAFF00" />
+                        <Stop offset="75%" stopColor="#FCA300" />
                         <Stop offset="100%" stopColor="#FF0000" />
                     </LinearGradient>
                 </Defs>
