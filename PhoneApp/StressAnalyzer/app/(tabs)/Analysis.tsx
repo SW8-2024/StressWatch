@@ -3,12 +3,13 @@ import { Text } from '@/components/Themed';
 import Card from '@/components/Card';
 import TabContainer from '@/components/TabContainer';
 import MonthlyStressGraph from '@/components/MonthlyStressGraph';
+import { breakDownData } from '@/constants/DummyData';
 
 export default function AnalysisScreen() {
   return (
     <TabContainer headerText='Stress breakdown per month'>
       <Card cardTitle='Stress graph'>
-        <MonthlyStressGraph />
+        <MonthlyStressGraph stressAverage={breakDownData.stressAverage} dataPoints={breakDownData.dailyStressDataPoints} />
       </Card>
       <Card>
         <Text>benis</Text>

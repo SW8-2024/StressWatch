@@ -2,9 +2,9 @@ const dataPoints = Array(30).fill({}).map((_, i) => ({
   value: i * 3,
   date: new Date(new Date().getTime() - ((30 - i) * 1000 * 60 * 60 * 24))
 }));
-export const monthlyStressData = {
-  average: dataPoints.reduce((p, c) => p + c.value, 0) / dataPoints.length,
-  dataPoints: dataPoints
+export const breakDownData = {
+  stressAverage: dataPoints.reduce((p, c) => p + c.value, 0) / dataPoints.length,
+  dailyStressDataPoints: dataPoints
 }
 
 export const screenTimeData = [

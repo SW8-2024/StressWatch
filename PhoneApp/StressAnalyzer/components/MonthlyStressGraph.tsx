@@ -1,7 +1,6 @@
-import React, { ReactNode } from 'react';
-import { StyleSheet, View, Text } from 'react-native';
+import React from 'react';
+import { StyleSheet } from 'react-native';
 import { BarChart, barDataItem as BarDataItem } from "react-native-gifted-charts";
-import { monthlyStressData } from '@/constants/DummyData';
 
 const valueToColor = (value: number): string => {
     if (value < 44) {
@@ -23,14 +22,24 @@ const dateFormatter = new Intl.DateTimeFormat(undefined, {
     month: '2-digit'
 });
 
-const coloredData = monthlyStressData.dataPoints.map((v, i) => ({
-    value: v.value,
-    label: ((i % 5) == 0) ? dateFormatter.format(v.date) : undefined,
-    frontColor: valueToColor(v.value),
-    originalDate: v.date
-}));
+export interface StressDataPoint {
+    date: Date;
+    value: number;
+}
 
-export default function MonthlyStressGraph(): JSX.Element {
+interface Props {
+    dataPoints: StressDataPoint[];
+    stressAverage: number;
+}
+
+export default function MonthlyStressGraph({dataPoints, stressAverage}: Props): JSX.Element {
+    const coloredData = dataPoints.map((v, i) => ({
+        value: v.value,
+        label: ((i % 5) == 0) ? dateFormatter.format(v.date) : undefined,
+        frontColor: valueToColor(v.value),
+        originalDate: v.date
+    }));
+
     return (
         <BarChart
             data={coloredData}
@@ -45,7 +54,7 @@ export default function MonthlyStressGraph(): JSX.Element {
             onPress={(item: BarDataItem, index: number) => console.log('item', item)}
             labelWidth={40}
             showReferenceLine1
-            referenceLine1Position={monthlyStressData.average}
+            referenceLine1Position={stressAverage}
             referenceLine1Config={{
                 color: 'white',
                 labelText: 'average',
