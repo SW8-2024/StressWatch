@@ -1,13 +1,16 @@
 import React, { ReactNode } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, Text } from 'react-native';
 
 interface CardProps {
     children: ReactNode;
+    cardTitle?: string;
+    cardSubTitle?: string;
 }
 
-const Card: React.FC<CardProps> = ({ children }) => {
+export default function Card({ children, cardTitle, cardSubTitle }: CardProps): JSX.Element {
     return (
         <View style={styles.card}>
+            {cardTitle ? <Text style={styles.titleStyle}>{cardTitle}</Text> : ""}
             {children}
         </View>
     );
@@ -15,12 +18,13 @@ const Card: React.FC<CardProps> = ({ children }) => {
 
 const styles = StyleSheet.create({
     card: {
-        flex: 1,
-        margin: 10,
+        padding: 10,
         backgroundColor: '#555555',
-        borderRadius: 20,
+        borderRadius: 10,
         overflow: 'hidden',
+    },
+    titleStyle: {
+        color: "white",
+        fontSize: 20
     }
 });
-
-export default Card;

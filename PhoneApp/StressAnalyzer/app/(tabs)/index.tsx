@@ -6,7 +6,7 @@ import { Link } from 'expo-router';
 import { useState } from 'react';
 import { FontAwesome5 } from '@expo/vector-icons';
 import Colors from '@/constants/Colors';
-import { graphData, notificationData, screenTimeData } from '@/constants/DummyData';
+import { notificationData, screenTimeData } from '@/constants/DummyData';
 import Card from '@/components/Card';
 
 const dataToColoredData = (data:barDataItem[]) : barDataItem[] => {
@@ -29,8 +29,6 @@ const valueToColor = (value:number) : string => {
     return '#AF0303'
   }
 }
-
-const coloredData = dataToColoredData(graphData)
 
 export default function HomeScreen() {
   const colorScheme = useColorScheme() ?? 'light';
@@ -110,27 +108,6 @@ export default function HomeScreen() {
           />
         </Pressable>
       </View>
-      <View style={{flex: 3}}>
-        <View style={styles.graphContainer}>
-          <View style={styles.graph}>
-            <BarChart 
-            data={coloredData}
-            roundedTop
-            barWidth={8}
-            yAxisColor={'white'}
-            yAxisTextStyle={{color: 'white'}}
-            xAxisColor={'white'}
-            xAxisLabelTextStyle={{color: 'white', marginLeft: -7}}
-            isAnimated
-            noOfSections={5}
-            spacing={2}
-            onPress = {(item:barDataItem,index:number)=>console.log('item',item)}
-            yAxisLabelWidth={30}
-            labelWidth={15}
-            initialSpacing={0}/>
-          </View>
-        </View>
-      </View>
       <View style={{flex: 2}}>
         <View style={styles.containerLabelsContainer}><Text style={styles.containerLabelsText}>Apps</Text></View>
         <Card>
@@ -173,14 +150,6 @@ const styles = StyleSheet.create({
     marginLeft: 20,
     marginRight: 20,
   },
-  graphContainer: {
-    flex: 1,
-  },
-  graph: {
-    flex: 1,
-    marginTop: 20,
-    backgroundColor: 'black',
- },
   containerLabelsContainer: {
     justifyContent: 'center',
     alignItems: 'center',
