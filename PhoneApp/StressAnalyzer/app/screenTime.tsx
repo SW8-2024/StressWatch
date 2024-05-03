@@ -1,13 +1,12 @@
-import { FlatList, Pressable, StyleSheet, useColorScheme, Image, TouchableOpacity } from 'react-native';
+import { FlatList, StyleSheet, useColorScheme, Image, TouchableOpacity } from 'react-native';
 import { Text, View } from '@/components/Themed';
 import { useLocalSearchParams, useNavigation } from 'expo-router';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import FontAwesome5 from '@expo/vector-icons/build/FontAwesome5';
 
 const getDaysInMonth = (year : number, month : number) => new Date(year, month, 0).getDate()
 
 export default function ScreenTimeScreen() {
-  const colorScheme = useColorScheme() ?? 'light';
   const params = useLocalSearchParams<{ date: string, image: string, name: string }>();
   const navigation = useNavigation();
   const [date] = useState(new Date(parseInt(params.date)))

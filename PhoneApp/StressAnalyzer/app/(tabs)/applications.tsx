@@ -1,4 +1,4 @@
-import { FlatList, Pressable, StyleSheet, useColorScheme } from 'react-native';
+import { FlatList, Pressable, StyleSheet } from 'react-native';
 import { Text, View } from '@/components/Themed';
 import { useState } from 'react';
 import { Image } from "react-native";
@@ -40,7 +40,6 @@ export default function ApplicationsScreen() {
           </Pressable>
         </Link>
       )
-
 
     return (
         <View style={{flex: 2}}>
