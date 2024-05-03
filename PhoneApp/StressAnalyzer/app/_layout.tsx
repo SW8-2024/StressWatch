@@ -50,11 +50,12 @@ function RootLayoutNav() {
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <SafeAreaView style={{ flex: 1, backgroundColor: Colors[colorScheme ?? 'light'].background }}>
-        <Stack>
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="screenTime" options={{ headerShown: false, animation: 'fade' }} />
-          <Stack.Screen name="notification" options={{ headerShown: false, animation: 'fade' }} />
+      <SafeAreaView style={{ flex: 1, backgroundColor: Colors[colorScheme ?? 'light'].background }}>      
+        <Stack
+        screenOptions={{
+           headerShown: false
+        }}>
+            <Stack.Screen name="index"/>
         </Stack>
       </SafeAreaView>
     </ThemeProvider>
