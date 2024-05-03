@@ -9,7 +9,7 @@ import FontAwesome5 from '@expo/vector-icons/build/FontAwesome5';
 
 
 export default function ApplicationsScreen() {
-    const [date] = useState(new Date());
+    const date = new Date();
 
     const renderAppsHeader = () => {  
         return (

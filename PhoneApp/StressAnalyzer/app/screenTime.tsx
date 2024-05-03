@@ -1,6 +1,6 @@
-import { FlatList, StyleSheet, useColorScheme, Image, TouchableOpacity } from 'react-native';
+import { FlatList, StyleSheet, useColorScheme, Image, TouchableOpacity, Pressable } from 'react-native';
 import { Text, View } from '@/components/Themed';
-import { useLocalSearchParams, useNavigation } from 'expo-router';
+import { useLocalSearchParams, useNavigation, Link } from 'expo-router';
 import { useState } from 'react';
 import FontAwesome5 from '@expo/vector-icons/build/FontAwesome5';
 
@@ -9,7 +9,7 @@ const getDaysInMonth = (year : number, month : number) => new Date(year, month, 
 export default function ScreenTimeScreen() {
   const params = useLocalSearchParams<{ date: string, image: string, name: string }>();
   const navigation = useNavigation();
-  const [date] = useState(new Date(parseInt(params.date)))
+  const date = new Date(parseInt(params.date))
   
   const formatMinutes = (minutes: number) => {
     const hours = Math.floor(minutes / 60);
@@ -27,27 +27,29 @@ export default function ScreenTimeScreen() {
 
   const renderScreenTimeItem = ({item, index}: { item: any, index: number}) => {  
     return (
-      <View>
-        <View style={styles.flatlistItemContainer}>
-          <View style={styles.flatlistItemDate}>
-            <Text style={styles.statsText}>Date</Text>
-            <Text>{screenTimeData.length - index}/{date.getMonth()+1}/{date.getFullYear()}</Text>
+      <Link href={{pathname: "/appDateSummary", params: { date: date.getTime(), image: item.image, name: item.name }}} asChild>
+        <Pressable>
+          <View style={styles.flatlistItemContainer}>
+            <View style={styles.flatlistItemDate}>
+              <Text style={styles.statsText}>Date</Text>
+              <Text>{screenTimeData.length - index}/{date.getMonth()+1}/{date.getFullYear()}</Text>
+            </View>
+            <View style={{ flex: 1, backgroundColor: 'transparent'}}></View>
+            <View style={styles.flatlistItemDailyAverage}>
+              <Text style={styles.statsText}>Daily Avg.</Text>
+              <Text>{item.dailyAverage}</Text>
+            </View>
+            <View style={styles.flatlistItemAppAverage}>
+              <Text style={styles.statsText}>App Avg.</Text>
+              <Text>{item.appAverage}</Text>
+            </View>
+            <View style={styles.flatlistItemUsage}>
+              <Text style={styles.statsText}>Usage</Text>
+              <Text>{item.usage}</Text>
+            </View>
           </View>
-          <View style={{ flex: 1, backgroundColor: 'transparent'}}></View>
-          <View style={styles.flatlistItemDailyAverage}>
-            <Text style={styles.statsText}>Daily Avg.</Text>
-            <Text>{item.dailyAverage}</Text>
-          </View>
-          <View style={styles.flatlistItemAppAverage}>
-            <Text style={styles.statsText}>App Avg.</Text>
-            <Text>{item.appAverage}</Text>
-          </View>
-          <View style={styles.flatlistItemUsage}>
-            <Text style={styles.statsText}>Usage</Text>
-            <Text>{item.usage}</Text>
-          </View>
-        </View>
-      </View>
+        </Pressable>
+      </Link>
     )
   }
 
