@@ -1,5 +1,5 @@
 import React, { ReactNode } from 'react';
-import { StyleSheet, View, Text } from 'react-native';
+import { StyleSheet, View, Text, ScrollView } from 'react-native';
 
 interface CardProps {
     children: ReactNode;
@@ -8,24 +8,29 @@ interface CardProps {
 
 export default function Card({ children, headerText }: CardProps): JSX.Element {
     return (
-        <View style={styles.tabContainer}>
-            <Text style={styles.headerStyle}>{headerText}</Text>
-            {children}
-        </View>
+        <ScrollView style={styles.scrollView}>
+            <View style={styles.contentContainer}>
+                <Text style={styles.headerStyle}>{headerText}</Text>
+                {children}
+            </View>
+        </ScrollView>
     );
 }
 
 const styles = StyleSheet.create({
-    tabContainer: {
+    scrollView: {
         flex: 1,
+    },
+    contentContainer: {
         flexDirection: "column",
         gap: 15,
         padding: 10
     },
     headerStyle: {
         color: "white",
-        fontSize: 26,
+        fontSize: 30,
         alignSelf: "center",
-        padding: 20
+        padding: 20,
+        textAlign: "center"
     }
 });

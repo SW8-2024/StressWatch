@@ -1,52 +1,39 @@
-import { StressDataPoint } from '@/helpers/Database';
+import { StressByApp } from '@/helpers/Database';
 import React from 'react';
 import { StyleSheet } from 'react-native';
 import { BarChart, barDataItem as BarDataItem } from "react-native-gifted-charts";
 
-const valueToColor = (value: number): string => {
-    if (value < 44) {
-        return '#36890E'
-    }
-    else if (value < 60) {
-        return '#CFA613'
-    }
-    else if (value < 80) {
-        return '#AF2C03'
-    }
-    else {
-        return '#AF0303'
-    }
-}
-
-const dateFormatter = new Intl.DateTimeFormat(undefined, {
-    day: '2-digit',
-    month: '2-digit'
-});
 
 interface Props {
-    dataPoints: StressDataPoint[];
+    stressByApp: StressByApp[];
     stressAverage: number;
 }
 
-export default function MonthlyStressGraph({dataPoints, stressAverage}: Props): JSX.Element {
-    const coloredData = dataPoints.map((v, i) => ({
+const stressfulAppColor = "#9D4949";
+const relaxingAppColor = "#559D49";
+
+export default function MostStressfullApps({stressByApp, stressAverage}: Props): JSX.Element {
+    const coloredData = stressByApp.map((v, i) => ({
         value: v.value,
-        label: ((i % 5) == 0) ? dateFormatter.format(v.date) : undefined,
-        frontColor: valueToColor(v.value),
-        originalDate: v.date
+        label: v.appName,
+        frontColor: v.value > stressAverage ? stressfulAppColor : relaxingAppColor
     }));
 
     return (
         <BarChart
             data={coloredData}
-            barWidth={8}
+            barWidth={30}
             yAxisColor={'white'}
             yAxisTextStyle={{ color: 'white' }}
             xAxisColor={'white'}
             xAxisLabelTextStyle={{ color: 'white'}}
-            spacing={2}
+            spacing={5}
+            barBorderColor={'black'}
+            barBorderWidth={2}
             onPress={(item: BarDataItem, index: number) => console.log('item', item)}
-            labelWidth={40}
+            labelWidth={60}
+            labelsExtraHeight={50}
+            rotateLabel
             showReferenceLine1
             referenceLine1Position={stressAverage}
             referenceLine1Config={{

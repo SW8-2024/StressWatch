@@ -11,6 +11,7 @@ export default function Card({ children, cardTitle, cardSubTitle }: CardProps): 
     return (
         <View style={styles.card}>
             {cardTitle ? <Text style={styles.titleStyle}>{cardTitle}</Text> : ""}
+            {cardSubTitle ? <Text style={styles.subTitleStyle}>{cardSubTitle}</Text> : ""}
             {children}
         </View>
     );
@@ -25,6 +26,10 @@ const styles = StyleSheet.create({
     },
     titleStyle: {
         color: "white",
-        fontSize: 20
+        fontSize: 26
+    },
+    subTitleStyle: {
+        color: "#DDDDDD",
+        fontSize: 18
     }
 });
