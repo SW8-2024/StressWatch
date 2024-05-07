@@ -1,33 +1,58 @@
-import { Pressable, StyleSheet, TextInput } from 'react-native';
+import { Button, Pressable, StyleSheet, TextInput } from 'react-native';
 import { Text, View } from '@/components/Themed';
 import { useEffect, useState } from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import {logout} from "@/helpers/Database"
+import { storeString, getString } from '@/helpers/AsyncStorage';
+import {logout, authorize} from "@/helpers/Database"
+import { style } from 'd3';
 
 export default function SettingsScreen() {
   const [apiUrl, setApiUrl] = useState('')
+  const [token, onChangeToken] = useState('');
+  const [pairStatus, setPairStatus] = useState('')
 
   useEffect(() => {
+    console.log("useEffect")
     try {
-      AsyncStorage.getItem('api-url').then((value : string | null) => {
-        if (value !== null) {
-          console.log('item', value)
-          setApiUrl(value)
+      getString('api-url').then((value: string | null | undefined) => {
+          if (value !== null && value !== undefined) {
+            console.log('item', value)
+            setApiUrl(value);
+          }
+      });
+    } catch (e) {
+      console.log(e)
+    }
+    
+    try {
+      getString('pairStatus').then((value: string | null | undefined) => {
+        if (value !== null && value !== undefined) {
+          console.log('pairStatus: ', value)
+          setPairStatus(value);
         }
       })
     } catch (e) {
       console.log(e)
     }
-  },[])
+
+  },[pairStatus])
 
   const storeData = async (value:string) => {
     try {
       setApiUrl(value)
-      await AsyncStorage.setItem('api-url', value);
+      await storeString('api-url', value);
     } catch (e) {
       console.log(e)
     }
   };
+
+  const storeStatus = async (value: string) => {
+    try {
+      setPairStatus(value)
+      await storeString('pairStatus', value);
+    } catch (e) {
+      console.log(e)
+    }
+  }
 
   return (
     <View style={styles.container}>
@@ -43,7 +68,24 @@ export default function SettingsScreen() {
           <Text>Log out</Text>        
         </Pressable>
       </View>
-      
+      <View style={styles.inputToken}>
+        <Text style={styles.label}>Pair watch</Text>
+        <View style={styles.pairStatus}>
+          <Text style={styles.statusText}>Status: {pairStatus}</Text>
+        </View>
+        <TextInput
+          style={styles.inputField}
+          keyboardType='numeric'
+          onChangeText={onChangeToken}
+          value={token}
+          placeholder='Enter auth token'/>
+        <Button
+          title="Pair now"
+          color="green"
+          onPress={async () => await authorize(token) ? storeStatus("Paired") : storeStatus('Unpaired')}/>
+      </View>
+
+
     </View>
   );
 }
@@ -51,15 +93,28 @@ export default function SettingsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    flexDirection: 'column'
   },
   api: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
   },
+  inputToken: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  pairStatus: {
+    alignSelf: 'flex-start',
+    paddingLeft: 50
+  },
   label: {
     fontSize: 20,
     fontWeight: 'bold',
+  },
+  statusText: {
+    fontSize: 16
   },
   inputField: {
     backgroundColor: '#555555',
