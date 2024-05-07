@@ -8,6 +8,7 @@ import { FontAwesome5 } from '@expo/vector-icons';
 import Colors from '@/constants/Colors';
 import { notificationData, screenTimeData } from '@/constants/DummyData';
 import Card from '@/components/Card';
+import Stressometer from '@/components/Stressometer';
 
 const dataToColoredData = (data:barDataItem[]) : barDataItem[] => {
   var coloredData:barDataItem[] = data
@@ -108,6 +109,19 @@ export default function HomeScreen() {
         </Pressable>
       </View>
       <View style={{flex: 2}}>
+        <View style={styles.containerLabelsContainer}><Text style={styles.containerLabelsText}>Today's Stress</Text></View>
+        <Card>
+          <View style={styles.todayStressCard}>
+            <Stressometer stressValue={30}/>
+            <View style={styles.todayStressCardText}>
+              <Text>Average: 30</Text>
+              <Text>Low: 10</Text>
+              <Text>High: 60</Text>
+            </View>
+          </View>
+        </Card>
+      </View>
+      <View style={{flex: 2}}>
         <View style={styles.containerLabelsContainer}><Text style={styles.containerLabelsText}>Apps</Text></View>
         <Card>
           <FlatList
@@ -169,5 +183,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-
+  todayStressCard: {
+    flexDirection: 'row',
+    justifyContent: 'space-evenly',
+    alignItems: 'center',
+    backgroundColor: 'transparent',
+    padding: 10,
+  },
+  todayStressCardText: {
+    backgroundColor: 'transparent',
+  },
 });
