@@ -44,6 +44,7 @@ export default function MonthlyStressGraph({ dataPoints, stressAverage }: Props)
       yAxisTextStyle={{ color: 'white' }}
       xAxisColor={'white'}
       xAxisLabelTextStyle={{ color: 'white' }}
+      xAxisLabelsVerticalShift={6}
       spacing={2}
       onPress={(item: BarDataItem, index: number) => console.log('item', item)}
       labelWidth={40}
