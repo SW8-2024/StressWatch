@@ -2,7 +2,8 @@ import { storeString, getString, clearStorage } from '@/helpers/AsyncStorage';
 import { router } from 'expo-router';
 //To test locally run backend locally and use something like ngrok to connect on phone
 //ngrok http --domain=emerging-teaching-stag.ngrok-free.app 2345
-const serverLocation = 'https://127.0.0.1/';
+//Or alternatively 'http://10.0.2.2:5093/' if you are cool
+const serverLocation = 'https://chillchaser.ovh/';
 
 async function fetchWithAuth(url: string, options?: RequestInit | undefined): Promise<Response> {
   let [authorized, accessToken] = await checkIfAuthorized();
@@ -29,7 +30,7 @@ async function fetchWithAuth(url: string, options?: RequestInit | undefined): Pr
 }
 
 export interface StressByApp {
-  appName: string;
+  name: string;
   value: number;
 }
 
@@ -39,17 +40,52 @@ export interface StressDataPoint {
 }
 
 export interface BreakDownData {
-  stressAverage: number;
+  averageStress: number;
   dailyStressDataPoints: StressDataPoint[];
   stressByApp: StressByApp[];
 }
 
+interface RemoteBreakDownData {
+  averageStress: number;
+  dailyStressDataPoints: (Omit<StressDataPoint, 'date'> & {date: string})[];
+  stressByApp: StressByApp[];
+}
+
+function mapBreakDownDataToInternal(data: RemoteBreakDownData): BreakDownData {
+  return {
+    averageStress: data.averageStress,
+    dailyStressDataPoints: data.dailyStressDataPoints.map(v => ({
+      date: new Date(v.date),
+      value: v.value
+    })),
+    stressByApp: data.stressByApp
+  };
+}
+
 export async function getBreakdown(date: Date): Promise<BreakDownData> {
-  const url: string = serverLocation + "api/DataCollection/breakdown";
-  const response: Response = await fetchWithAuth(url);
+  const endpointUrl: string = serverLocation + "api/DataCollection/breakdown";
+  const response: Response = await fetchWithAuth(`${endpointUrl}?date=${date.toISOString()}`);
   if (response.status != 200) {
     throw new Error(`Got status ${response.status} while trying to get breakdown`)
   }
+
+  return mapBreakDownDataToInternal(await response.json());
+}
+
+export interface StressMetrics {
+  average: number;
+  min: number;
+  max: number;
+  latest: number;
+}
+
+export async function getStressMetrics(date: Date): Promise<StressMetrics> {
+  const endpointUrl: string = serverLocation + "api/DataCollection/stress-metrics";
+  const response: Response = await fetchWithAuth(`${endpointUrl}?date=${date.toISOString()}`);
+  if (response.status != 200) {
+    throw new Error(`Got status ${response.status} while trying to get breakdown`)
+  }
+
   return await response.json();
 }
 
@@ -146,18 +182,18 @@ export async function login(email: string, password: string) {
 
 export async function refreshAuthorization(): Promise<boolean> {
   let url = serverLocation + "refresh";
-  let ret = false;
 
   let authorizedUntil = await getString("authorizedUntil");
   if (authorizedUntil == null || authorizedUntil == undefined || parseInt(authorizedUntil) < Date.now()) {
     console.log("Cannot refresh authorization");
-    return ret;
+    return false;
   }
 
   let refreshToken = await getString("refreshToken");
   if (refreshToken == null || refreshToken == undefined) {
     return false;
   };
+
   try {
     let response = await fetch(url, {
       method: 'POST',
@@ -168,18 +204,19 @@ export async function refreshAuthorization(): Promise<boolean> {
         "refreshToken": refreshToken,
       }),
     });
-    if (response.status == 200) {
-      ret = true;
-      let resp = await response.json();
-      await storeString("accessToken", resp.accessToken);
-      await storeString("refreshToken", resp.refreshToken);
-      await storeString("authorizedUntil", (Date.now() + resp.expiresIn * 1000).toString());
+    if (response.status != 200) {
+      return false;
     }
+    let resp = await response.json();
+    await storeString("accessToken", resp.accessToken);
+    await storeString("refreshToken", resp.refreshToken);
+    await storeString("authorizedUntil", (Date.now() + resp.expiresIn * 1000).toString());
+    
+    return true;
   } catch (e) {
     console.log("Error: " + e);
     return false;
   }
-  return ret;
 }
 
 export async function logout() {
