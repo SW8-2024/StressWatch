@@ -51,13 +51,6 @@ export default function AnalysisScreen(): JSX.Element {
     };
   }, [currentDate]);
 
-  function renderError(error: string): JSX.Element {
-    return <>
-      <Text>An error occured :(</Text>
-      <Text>{error}</Text>
-      <Button title="Retry" onPress={() => setCurrentDate(new Date())}></Button></>;
-  }
-
   let innerContent = <></>;
   if (error != null) {
     innerContent = <ErrorWithRetry errorText={error} retry={() => setCurrentDate(new Date())} />;
