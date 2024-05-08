@@ -1,6 +1,6 @@
 import { StressByApp } from '@/helpers/Database';
 import React from 'react';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { BarChart, barDataItem as BarDataItem } from "react-native-gifted-charts";
 
 
@@ -20,32 +20,33 @@ export default function MostStressfullApps({ stressByApp, stressAverage }: Props
   }));
 
   return (
-    <BarChart
-      data={coloredData}
-      barWidth={30}
-      yAxisColor={'white'}
-      yAxisTextStyle={{ color: 'white' }}
-      xAxisColor={'white'}
-      xAxisLabelTextStyle={{ color: 'white' }}
-      spacing={5}
-      barBorderColor={'black'}
-      barBorderWidth={2}
-      onPress={(item: BarDataItem, index: number) => console.log('item', item)}
-      labelWidth={60}
-      labelsExtraHeight={50}
-      width={200}
-      rotateLabel
-      showReferenceLine1
-      referenceLine1Position={stressAverage}
-      referenceLine1Config={{
-        color: 'white',
-        labelText: 'average',
-        labelTextStyle: {
-          color: 'white'
-        },
-        dashWidth: 6,
-        dashGap: 4,
-        thickness: 3
-      }} />
+    <View style={{ overflow: 'hidden', marginRight: 10 }}>
+      <BarChart
+        data={coloredData}
+        barWidth={30}
+        yAxisColor={'white'}
+        yAxisTextStyle={{ color: 'white' }}
+        xAxisColor={'white'}
+        xAxisLabelTextStyle={{ color: 'white' }}
+        spacing={5}
+        barBorderColor={'black'}
+        barBorderWidth={2}
+        onPress={(item: BarDataItem, index: number) => console.log('item', item)}
+        labelWidth={60}
+        labelsExtraHeight={50}
+        rotateLabel
+        showReferenceLine1
+        referenceLine1Position={stressAverage}
+        referenceLine1Config={{
+          color: 'white',
+          labelText: 'average',
+          labelTextStyle: {
+            color: 'white'
+          },
+          dashWidth: 6,
+          dashGap: 4,
+          thickness: 3
+        }} />
+    </View>
   );
 }

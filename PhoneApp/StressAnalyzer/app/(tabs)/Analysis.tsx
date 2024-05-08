@@ -7,6 +7,7 @@ import MostStressfullApps from '@/components/MostStressfullApps';
 import { BreakDownData, getBreakdown } from '@/helpers/Database';
 import { useEffect, useState } from 'react';
 import ErrorWithRetry from '@/components/ErrorWithRetry';
+import AnalysisLoading from '@/components/AnalysisLoading';
 
 
 
@@ -19,13 +20,6 @@ function renderWithData(breakDownData: BreakDownData): JSX.Element {
       <MostStressfullApps stressAverage={breakDownData.averageStress} stressByApp={breakDownData.stressByApp} />
     </Card>
   </>
-}
-
-function renderLoading(): JSX.Element {
-  return <>
-    <ActivityIndicator size="large" />
-    <Text style={{ textAlign: 'center' }}>Crunching some numbers...</Text>
-  </>;
 }
 
 export default function AnalysisScreen(): JSX.Element {
@@ -46,6 +40,7 @@ export default function AnalysisScreen(): JSX.Element {
       }
     })();
     return () => {
+      setBreakDownData(null);
       setError(null);
       cancel = true;
     };
@@ -57,7 +52,7 @@ export default function AnalysisScreen(): JSX.Element {
   } else if (breakDownData != null) {
     innerContent = renderWithData(breakDownData);
   } else {
-    innerContent = renderLoading();
+    innerContent = <AnalysisLoading />;
   }
 
   return (

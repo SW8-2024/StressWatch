@@ -9,6 +9,7 @@ import FontAwesome5 from '@expo/vector-icons/build/FontAwesome5';
 import TabContainer from '@/components/TabContainer';
 import { AppAnalysisData, getAppAnalysis } from '@/helpers/Database';
 import ErrorWithRetry from '@/components/ErrorWithRetry';
+import AnalysisLoading from '@/components/AnalysisLoading';
 
 
 const tinderImage = require("@/assets/images/TinderImage.png");
@@ -23,9 +24,7 @@ export default function ApplicationsScreen() {
     let cancel = false;
     (async () => {
       try {
-        console.log("Send app analysis request", new Date())
         let appAnalysis = await getAppAnalysis();
-        console.log("response", new Date())
         if (!cancel) {
           setAppAnalysisData(appAnalysis);
         }
@@ -35,6 +34,7 @@ export default function ApplicationsScreen() {
     })();
     return () => {
       setError(null);
+      setAppAnalysisData(null);
       cancel = true;
     };
   }, [currentDate]);
@@ -67,24 +67,28 @@ export default function ApplicationsScreen() {
       </Pressable>
     </Link>
   )
-  let innerContent = <></>
-  if (error != null) {
-    innerContent = <ErrorWithRetry errorText={error} retry={() => setCurrentDate(new Date())} />;
-  } else if (appAnalysisData != null) {
-    innerContent = <Card noPadding>
-      <FlatList
-        data={appAnalysisData}
-        renderItem={renderAppsItem}
-        ListHeaderComponent={renderAppsHeader}
-        ListHeaderComponentStyle={styles.flatlistHeaderTextContainer}
-        stickyHeaderIndices={[0]} />
-    </Card>;
+
+  function renderAppAnalysisTable() {
+    if (error != null) {
+      return <ErrorWithRetry errorText={error} retry={() => setCurrentDate(new Date())} />;
+    } else if (appAnalysisData != null) {
+      return <Card noPadding>
+        <FlatList
+          data={appAnalysisData}
+          renderItem={renderAppsItem}
+          ListHeaderComponent={renderAppsHeader}
+          ListHeaderComponentStyle={styles.flatlistHeaderTextContainer}
+          stickyHeaderIndices={[0]} />
+      </Card>;
+    } else {
+      return <AnalysisLoading />;
+    }
   }
 
   return (
-    <TabContainer headerText='Apps'>
+    <TabContainer headerText='Apps' noScroll>
       <Button title='refresh' onPress={() => setCurrentDate(new Date())} />
-      {innerContent}
+      {renderAppAnalysisTable()}
     </TabContainer>
   );
 }

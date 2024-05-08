@@ -67,14 +67,18 @@ export interface AppAnalysisData {
   usageSeconds: number;
 }
 
-interface RemoteAppAnalysisData {
+interface RemoteAppUsageAnalysis {
   name: string;
   averageStress: number;
   referenceStress: string;
   usage: string;
 }
 
-function mapAppAnalysisData(data: RemoteAppAnalysisData): AppAnalysisData {
+interface RemoteAppAnalysisData {
+  appUsageAnalysis: RemoteAppUsageAnalysis[]
+}
+
+function mapAppAnalysisData(data: RemoteAppUsageAnalysis): AppAnalysisData {
   let usageParsed = data.usage.match(/^([0-9]+):([0-9]+):([0-9]+)\.[0-9]+$/);
   if (usageParsed?.length != 4) {
     throw new Error("Could not parse app analysis data, got: " + JSON.stringify(usageParsed));
@@ -117,9 +121,9 @@ export async function getAppAnalysis(): Promise<AppAnalysisData[]> {
   if (response.status != 200) {
     throw new Error(`Got status ${response.status} while trying to get app-breakdown`);
   }
-  let unmapped: RemoteAppAnalysisData[] = await response.json();
+  let unmapped: RemoteAppAnalysisData = await response.json();
 
-  return unmapped.map(mapAppAnalysisData);
+  return unmapped.appUsageAnalysis.map(mapAppAnalysisData);
 }
 
 export async function getStressMetrics(date: Date): Promise<StressMetrics> {
