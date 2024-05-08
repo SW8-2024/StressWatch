@@ -3,7 +3,7 @@ import { router } from 'expo-router';
 //To test locally run backend locally and use something like ngrok to connect on phone
 //ngrok http --domain=emerging-teaching-stag.ngrok-free.app 2345
 //Or alternatively 'http://10.0.2.2:5093/' if you are cool
-const serverLocation = 'http://10.0.2.2:5093/';
+const serverLocation = 'https://chillchaser.ovh/';
 
 async function fetchWithAuth(url: string, options?: RequestInit | undefined): Promise<Response> {
   let [authorized, accessToken] = await checkIfAuthorized();
