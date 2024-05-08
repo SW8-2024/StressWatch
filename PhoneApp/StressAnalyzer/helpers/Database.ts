@@ -127,6 +127,36 @@ export async function login(email : string, password : string){
   return ret;
 }
 
+export async function authorize(token: string) : Promise<string> {
+  const data = {
+    token: token
+  }
+
+  let url : string = serverLocation + "api/Watch/authorize";
+  let [authorized, accessToken] = await checkIfAuthorized();
+
+  if (!authorized) {
+    return "Not authorized";
+  }
+  
+  let response: Response = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'accept': '*/*',
+      'Authorization': 'Bearer ' + accessToken
+
+    },
+    body: JSON.stringify(data),
+  })
+
+  if (response.status == 200){
+    return `${response.status} Authorized`;
+  } else {
+    return `${response.status} ${((await response.text()).replaceAll('"', ' '))}`;
+  }
+}
+
 export async function refreshAuthorization() : Promise<boolean>{
   let url = serverLocation + "refresh";
   let ret = false;
@@ -164,6 +194,9 @@ export async function refreshAuthorization() : Promise<boolean>{
   }
   return ret;
 }
+
+///>TODO: Use AsyncStorage to set pairStatus when getting heart rate data
+// AsyncStorage.setItem('pairStatus', value) 'Paired' or 'Unpaired'
 
 export async function logout(){
   await clearStorage();

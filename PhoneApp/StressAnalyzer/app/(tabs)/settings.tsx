@@ -82,7 +82,7 @@ export default function SettingsScreen() {
         <Button
           title="Pair now"
           color="green"
-          onPress={async () => await authorize(token) ? storeStatus("Paired") : storeStatus('Unpaired')}/>
+          onPress={ async () => storeStatus(await authorize(token)) }/>
       </View>
 
 
