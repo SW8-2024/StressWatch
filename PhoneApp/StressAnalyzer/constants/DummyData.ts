@@ -19,13 +19,43 @@ export const screenTimeData = [
     "image": require("@/assets/images/TinderImage.png"),
     "name": "Tinder",
     "averageStress": 58,
-    "usage": 403
+    "referenceStress": 76,
+    "usage": '0:45'
   },
   {
     "image": require("@/assets/images/TwitterImage.png"),
     "name": "Twitter",
     "averageStress": 34,
-    "usage": 3163
+    "referenceStress": 55,
+    "usage": '0:13'
+  },
+  {
+    "image": require("@/assets/images/icons8-instagram-48.png"),
+    "name": "Instagram",
+    "averageStress": 67,
+    "referenceStress": 43,
+    "usage": '0:22'
+  },
+  {
+    "image": require("@/assets/images/icons8-facebook-48.png"),
+    "name": "Facebook",
+    "averageStress": 45,
+    "referenceStress": 45,
+    "usage": '0:28'
+  },
+  {
+    "image": require("@/assets/images/icons8-tiktok-48.png"),
+    "name": "TikTok",
+    "averageStress": 20,
+    "referenceStress": 20,
+    "usage": '0:20'
+  },
+  {
+    "image": require("@/assets/images/icons8-youtube-48.png"),
+    "name": "YouTube",
+    "averageStress": 45,
+    "referenceStress": 45,
+    "usage": '0:45'
   }
 ]
 export const notificationData = [

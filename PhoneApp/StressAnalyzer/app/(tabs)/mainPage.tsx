@@ -66,7 +66,7 @@ export default function HomeScreen() {
 
   return (
     <TabContainer headerText='Home'>
-      <Button title='refresh' onPress={() => setCurrentDate(new Date())}/>
+      <Button title='refresh' onPress={() => setCurrentDate(new Date())} />
       <Card cardTitle="Today's Stress">
         {renderTodayStressCard()}
       </Card>

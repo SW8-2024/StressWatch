@@ -1,5 +1,6 @@
 import React from 'react';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
+import { Ionicons } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
 
 import Colors from '@/constants/Colors';
@@ -34,6 +35,13 @@ export default function TabLayout() {
         options={{
           title: 'Analysis',
           tabBarIcon: ({ color }) => <TabBarIcon name="rocket" color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="applications"
+        options={{
+          title: 'Apps',
+          tabBarIcon: ({ color }) => <Ionicons name="apps" size={24} color={color} />,
         }}
       />
       <Tabs.Screen
