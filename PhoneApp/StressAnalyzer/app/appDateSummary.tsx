@@ -1,8 +1,10 @@
-import { FlatList, Pressable, StyleSheet, useColorScheme } from 'react-native';
-import { View } from "@/components/Themed";
+import { FlatList, Pressable, StyleSheet, TouchableOpacity, useColorScheme, Image } from 'react-native';
+import { Text, View } from "@/components/Themed";
 import { useLocalSearchParams, useNavigation } from "expo-router";
 import { useState } from "react";
 import { BarChart, barDataItem } from "react-native-gifted-charts";
+import Card from '@/components/Card';
+import { FontAwesome5 } from '@expo/vector-icons';
 
 const dataToColoredData = (data:barDataItem[]) : barDataItem[] => {
   var coloredData:barDataItem[] = data
@@ -56,31 +58,48 @@ export default function AppDateSummaryScreen(){
   const date = new Date(parseInt(params.date))
 
   return(
-    <View style={{flex: 3}}>
-      <View style={styles.graphContainer}>
-        <View style={styles.graph}>
-          <BarChart 
-          data={coloredAppData}
-          cappedBars
-          capColor={'white'}
-          capThickness={0}
-          barWidth={7}
-          roundedBottom={false}
-          yAxisColor={'white'}
-          yAxisTextStyle={{color: 'white'}}
-          xAxisColor={'white'}
-          xAxisLabelTextStyle={{color: 'white', marginLeft: -15}}
-          isAnimated
-          noOfSections={4}
-          spacing={0}
-          onPress = {(item:barDataItem,index:number)=>console.log('item',item)}
-          yAxisLabelWidth={30}
-          xAxisThickness={1}
-          labelWidth={15}
-          initialSpacing={15}
-          />
+    <View style={styles.container}>
+      <View style={styles.appHeaderContainer}>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <FontAwesome5
+              name="arrow-left"
+              size={24}
+              color={'white'}
+              />
+        </TouchableOpacity>
+        <View style={styles.appContainer}>
+          <Image source={Number(params.image)} style={styles.appImage} />
+          <Text style={styles.appName}>{params.name}</Text>
         </View>
+        <View/>
       </View>
+      <View style={{flex: 3}}>
+      <Card>
+        <View style={styles.containerLabelsContainer}><Text style={styles.containerLabelsText}>{date.getUTCDate()}/{date.getMonth()+1}/{date.getFullYear()}</Text></View>
+            <BarChart 
+            data={coloredAppData}
+            cappedBars
+            capColor={'white'}
+            capThickness={0}
+            barWidth={6}
+            roundedBottom={false}
+            yAxisColor={'white'}
+            yAxisTextStyle={{color: 'white'}}
+            xAxisColor={'white'}
+            xAxisLabelTextStyle={{color: 'white', marginLeft: -15}}
+            isAnimated
+            noOfSections={4}
+            spacing={0}
+            onPress = {(item:barDataItem,index:number)=>console.log('item',item)}
+            yAxisLabelWidth={30}
+            xAxisThickness={1}
+            labelWidth={15}
+            labelsExtraHeight={5}
+            initialSpacing={15}
+            endSpacing={20}
+            />
+      </Card>
+    </View>
     </View>
   );
 }
@@ -89,35 +108,42 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  monthContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginTop: 12,
-  },
-  monthText: {
-    fontSize: 24,
-    fontWeight: 'bold',
-  },
   arrowButtons: {
     marginLeft: 20,
     marginRight: 20,
   },
-  graphContainer: {
-    flex: 1,
+  appHeaderContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 12,
+    marginHorizontal: 12,
+  },
+  appContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginRight: 24,
+  },
+  appImage: {
+    width: 64,
+    height: 64,
+  },
+  appName: {
+    marginLeft: 12,
+    fontSize: 24,
   },
   graph: {
     flex: 1,
     marginTop: 20,
-    backgroundColor: 'black',
  },
   containerLabelsContainer: {
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: '#555555',
   },
   containerLabelsText: {
-    fontWeight: 'bold',
-    fontSize: 18,
+    fontSize: 36,
   },
   flatlistItemContainer: {
     flexDirection: 'row',
@@ -130,15 +156,5 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  todayStressCard: {
-    flexDirection: 'row',
-    justifyContent: 'space-evenly',
-    alignItems: 'center',
-    backgroundColor: 'transparent',
-    padding: 10,
-  },
-  todayStressCardText: {
-    backgroundColor: 'transparent',
   },
 });

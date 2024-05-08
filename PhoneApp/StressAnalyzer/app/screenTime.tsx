@@ -27,7 +27,7 @@ export default function ScreenTimeScreen() {
 
   const renderScreenTimeItem = ({item, index}: { item: any, index: number}) => {  
     return (
-      <Link href={{pathname: "/appDateSummary", params: { date: date.getTime(), image: item.image, name: item.name }}} asChild>
+      <Link href={{pathname: "/appDateSummary", params: { date: params.date, image: params.image, name: params.name }}} asChild>
         <Pressable>
           <View style={styles.flatlistItemContainer}>
             <View style={styles.flatlistItemDate}>
