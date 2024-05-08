@@ -46,7 +46,7 @@ export const server = setupServer(
           },
         }
       );
-    }    
+    }
   }),
   http.post<PathParams, registerRequestBody, loginResponse, string>(serverLocation + 'login', async ({ request }) => {    
     const body = await request.json();

@@ -17,5 +17,5 @@
     "**/*.tsx",
     ".expo/types/**/*.ts",
     "expo-env.d.ts"
-, "___mocks___/@react-native-async-storage/async-storage.js"  ]
+  ]
 }
