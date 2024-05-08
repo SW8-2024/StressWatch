@@ -44,28 +44,6 @@ export default function HomeScreen() {
   const showNextMonth = () => {
     setDate(prev => new Date(prev.setMonth(prev.getMonth()+1)))
   };
-
-  const renderAppsHeader = () => {  
-    return (
-      <View style={styles.flatlistItemContainer}>
-        <View style={{flex: 1, backgroundColor: 'transparent'}}></View>
-        <View style={{flex: 4, backgroundColor: 'transparent'}}></View>
-        <View style={styles.flatlistItemTextContainer}><Text style={{fontWeight: 'bold'}}>Avg. Stress</Text></View>
-        <View style={styles.flatlistItemTextContainer}><Text style={{fontWeight: 'bold'}}>Usage</Text></View>
-      </View>
-    )
-  }
-  
-  const renderAppsItem = ({item, index}: { item: any, index: number}) => (
-    <Link href={{pathname: "/screenTime", params: { date: date.getTime(), image: item.image, name: item.name }}} asChild>
-      <Pressable style={styles.flatlistItemContainer}>
-        <View style={{ flex: 1, backgroundColor: 'transparent', justifyContent: 'center'}}><Image source={item.image} /></View>
-        <View style={{ flex: 4, backgroundColor: 'transparent', justifyContent: 'center'}}><Text>{item.name}</Text></View>
-        <View style={styles.flatlistItemTextContainer}><Text>{item.averageStress}</Text></View>
-        <View style={styles.flatlistItemTextContainer}><Text>{item.usage}</Text></View>
-      </Pressable>
-    </Link>
-  )
   
   const renderNotificationHeader = () => {  
     return (
@@ -142,16 +120,6 @@ export default function HomeScreen() {
               <Text>High: 60</Text>
             </View>
           </View>
-        </Card>
-      </View>
-      <View style={{flex: 2}}>
-        <View style={styles.containerLabelsContainer}><Text style={styles.containerLabelsText}>Apps</Text></View>
-        <Card>
-          <FlatList
-            data={screenTimeData}
-            renderItem={renderAppsItem}
-            ListHeaderComponent={renderAppsHeader}
-            stickyHeaderIndices={[0]}/>
         </Card>
       </View>
       <View style={{flex: 2}}>
