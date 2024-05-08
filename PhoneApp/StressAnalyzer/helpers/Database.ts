@@ -3,7 +3,7 @@ import { router } from 'expo-router';
 //To test locally run backend locally and use something like ngrok to connect on phone
 //ngrok http --domain=emerging-teaching-stag.ngrok-free.app 2345
 //Or alternatively 'http://10.0.2.2:5093/' if you are cool
-const serverLocation = 'https://chillchaser.ovh/';
+const serverLocation = 'http://10.0.2.2:5093/';
 
 async function fetchWithAuth(url: string, options?: RequestInit | undefined): Promise<Response> {
   let [authorized, accessToken] = await checkIfAuthorized();
@@ -51,6 +51,44 @@ interface RemoteBreakDownData {
   stressByApp: StressByApp[];
 }
 
+export interface StressMetrics {
+  average: number;
+  min: number;
+  max: number;
+  latest: number;
+}
+
+export interface AppAnalysisData {
+  name: string;
+  averageStress: number;
+  referenceStress: string;
+  usageHours: number;
+  usageMinutes: number;
+  usageSeconds: number;
+}
+
+interface RemoteAppAnalysisData {
+  name: string;
+  averageStress: number;
+  referenceStress: string;
+  usage: string;
+}
+
+function mapAppAnalysisData(data: RemoteAppAnalysisData): AppAnalysisData {
+  let usageParsed = data.usage.match(/^([0-9]+):([0-9]+):([0-9]+)\.[0-9]+$/);
+  if (usageParsed?.length != 4) {
+    throw new Error("Could not parse app analysis data, got: " + JSON.stringify(usageParsed));
+  }
+  return {
+    name: data.name,
+    averageStress: data.averageStress,
+    referenceStress: data.referenceStress,
+    usageHours: Number(usageParsed[1]),
+    usageMinutes: Number(usageParsed[2]),
+    usageSeconds: Number(usageParsed[3])
+  };
+}
+
 function mapBreakDownDataToInternal(data: RemoteBreakDownData): BreakDownData {
   return {
     averageStress: data.averageStress,
@@ -63,7 +101,7 @@ function mapBreakDownDataToInternal(data: RemoteBreakDownData): BreakDownData {
 }
 
 export async function getBreakdown(date: Date): Promise<BreakDownData> {
-  const endpointUrl: string = serverLocation + "api/DataCollection/breakdown";
+  const endpointUrl: string = serverLocation + "api/DataAnalysis/breakdown";
   const response: Response = await fetchWithAuth(`${endpointUrl}?date=${date.toISOString()}`);
   if (response.status != 200) {
     throw new Error(`Got status ${response.status} while trying to get breakdown`)
@@ -72,15 +110,20 @@ export async function getBreakdown(date: Date): Promise<BreakDownData> {
   return mapBreakDownDataToInternal(await response.json());
 }
 
-export interface StressMetrics {
-  average: number;
-  min: number;
-  max: number;
-  latest: number;
+
+export async function getAppAnalysis(): Promise<AppAnalysisData[]> {
+  const endpointUrl: string = serverLocation + "api/DataAnalysis/app-breakdown";
+  const response: Response = await fetchWithAuth(endpointUrl);
+  if (response.status != 200) {
+    throw new Error(`Got status ${response.status} while trying to get app-breakdown`);
+  }
+  let unmapped: RemoteAppAnalysisData[] = await response.json();
+
+  return unmapped.map(mapAppAnalysisData);
 }
 
 export async function getStressMetrics(date: Date): Promise<StressMetrics> {
-  const endpointUrl: string = serverLocation + "api/DataCollection/stress-metrics";
+  const endpointUrl: string = serverLocation + "api/DataAnalysis/stress-metrics";
   const response: Response = await fetchWithAuth(`${endpointUrl}?date=${date.toISOString()}`);
   if (response.status != 200) {
     throw new Error(`Got status ${response.status} while trying to get breakdown`)
@@ -90,7 +133,7 @@ export async function getStressMetrics(date: Date): Promise<StressMetrics> {
 }
 
 export async function sendUsageData(data: EventUsageTransformedData[]) {
-  const url: string = serverLocation + "api/DataCollection/app-usage";
+  const url: string = serverLocation + "api/DataAnalysis/app-usage";
   let response: Response = await fetchWithAuth(url, {
     method: 'POST',
     headers: {
