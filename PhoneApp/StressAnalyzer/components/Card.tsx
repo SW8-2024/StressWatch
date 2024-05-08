@@ -5,11 +5,12 @@ interface CardProps {
     children: ReactNode;
     cardTitle?: string;
     cardSubTitle?: string;
+    noPadding?: boolean;
 }
 
-export default function Card({ children, cardTitle, cardSubTitle }: CardProps): JSX.Element {
+export default function Card({ children, cardTitle, cardSubTitle, noPadding }: CardProps): JSX.Element {
     return (
-        <View style={styles.card}>
+        <View style={{...styles.card, padding: noPadding == true ? 0 : 10}}>
             {cardTitle ? <Text style={styles.titleStyle}>{cardTitle}</Text> : ""}
             {cardSubTitle ? <Text style={styles.subTitleStyle}>{cardSubTitle}</Text> : ""}
             {children}
@@ -19,7 +20,6 @@ export default function Card({ children, cardTitle, cardSubTitle }: CardProps): 
 
 const styles = StyleSheet.create({
     card: {
-        padding: 10,
         backgroundColor: '#555555',
         borderRadius: 10,
         overflow: 'hidden',

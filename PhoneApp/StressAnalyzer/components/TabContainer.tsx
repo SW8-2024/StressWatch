@@ -24,7 +24,7 @@ const styles = StyleSheet.create({
     contentContainer: {
         flexDirection: "column",
         gap: 15,
-        padding: 10
+        padding: 20
     },
     headerStyle: {
         color: "white",
