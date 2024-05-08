@@ -16,4 +16,4 @@ jobs:
         run: npm install
       - name: Run Jest
         working-directory: ./PhoneApp/StressAnalyzer/
-        run: npx test
+        run: npx jest
