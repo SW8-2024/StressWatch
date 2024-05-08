@@ -1,0 +1,19 @@
+name: build-test
+
+on: [ push ]
+
+jobs:
+  integration-testing:
+    name: Integration testing
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-node@v4
+        with:
+          node-version: latest
+      - uses: actions/checkout@v4
+      - name: Install packages
+        working-directory: ./PhoneApp/StressAnalyzer/
+        run: npm install
+      - name: Run Jest
+        working-directory: ./PhoneApp/StressAnalyzer/
+        run: npx jest
