@@ -1,7 +1,6 @@
-import { FlatList, StyleSheet, useColorScheme, Image, TouchableOpacity, Pressable } from 'react-native';
+import { FlatList, StyleSheet, Image, TouchableOpacity, Pressable } from 'react-native';
 import { Text, View } from '@/components/Themed';
 import { useLocalSearchParams, useNavigation, Link } from 'expo-router';
-import { useState } from 'react';
 import FontAwesome5 from '@expo/vector-icons/build/FontAwesome5';
 
 const getDaysInMonth = (year : number, month : number) => new Date(year, month, 0).getDate()

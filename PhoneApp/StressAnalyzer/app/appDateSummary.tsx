@@ -1,7 +1,6 @@
-import { FlatList, Pressable, StyleSheet, TouchableOpacity, useColorScheme, Image } from 'react-native';
+import { StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { Text, View } from "@/components/Themed";
 import { useLocalSearchParams, useNavigation } from "expo-router";
-import { useState } from "react";
 import { BarChart, barDataItem } from "react-native-gifted-charts";
 import Card from '@/components/Card';
 import { FontAwesome5 } from '@expo/vector-icons';
