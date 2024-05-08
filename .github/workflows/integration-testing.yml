@@ -12,6 +12,8 @@ jobs:
           node-version: latest
       - uses: actions/checkout@v4
       - name: Install packages
+        working-directory: ./PhoneApp/StressAnalyzer/
         run: npm install
       - name: Run Jest
+        working-directory: ./PhoneApp/StressAnalyzer/
         run: npx test
