@@ -1,6 +1,7 @@
 import { Button, Pressable, StyleSheet, TextInput } from 'react-native';
 import { Text, View } from '@/components/Themed';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
 import { storeString, getString } from '@/helpers/AsyncStorage';
 import {logout, authorize} from "@/helpers/Database"
 import { style } from 'd3';
@@ -9,6 +10,7 @@ export default function SettingsScreen() {
   const [apiUrl, setApiUrl] = useState('')
   const [token, onChangeToken] = useState('');
   const [pairStatus, setPairStatus] = useState('')
+  const [authResponse, setAuthResponse] = useState('');
 
   useEffect(() => {
     console.log("useEffect")
@@ -22,19 +24,14 @@ export default function SettingsScreen() {
     } catch (e) {
       console.log(e)
     }
-    
-    try {
-      getString('pairStatus').then((value: string | null | undefined) => {
-        if (value !== null && value !== undefined) {
-          console.log('pairStatus: ', value)
-          setPairStatus(value);
-        }
-      })
-    } catch (e) {
-      console.log(e)
-    }
+  },[])
 
-  },[pairStatus])
+  // Only runs if the screen is currently focused
+  useFocusEffect(
+    useCallback(() => {
+      setAuthResponse('');
+    }, [])
+  );
 
   const storeData = async (value:string) => {
     try {
@@ -44,15 +41,6 @@ export default function SettingsScreen() {
       console.log(e)
     }
   };
-
-  const storeStatus = async (value: string) => {
-    try {
-      setPairStatus(value)
-      await storeString('pairStatus', value);
-    } catch (e) {
-      console.log(e)
-    }
-  }
 
   return (
     <View style={styles.container}>
@@ -71,7 +59,7 @@ export default function SettingsScreen() {
       <View style={styles.inputToken}>
         <Text style={styles.label}>Pair watch</Text>
         <View style={styles.pairStatus}>
-          <Text style={styles.statusText}>Status: {pairStatus}</Text>
+          <Text style={styles.statusText}>Last received heart rate: 1 min ago</Text>
         </View>
         <TextInput
           style={styles.inputField}
@@ -82,10 +70,9 @@ export default function SettingsScreen() {
         <Button
           title="Pair now"
           color="green"
-          onPress={ async () => storeStatus(await authorize(token)) }/>
+          onPress={ async () => {setAuthResponse(await authorize(token)); onChangeToken('')} }/>
+        <Text style={styles.responseText}>{authResponse}</Text>
       </View>
-
-
     </View>
   );
 }
@@ -114,7 +101,12 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   statusText: {
-    fontSize: 16
+    fontSize: 16,
+    margin: 4
+  },
+  responseText: {
+    fontSize: 16,
+    paddingTop: 4
   },
   inputField: {
     backgroundColor: '#555555',
