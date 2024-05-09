@@ -1,29 +1,17 @@
-import { Button, Pressable, StyleSheet, TextInput } from 'react-native';
+import { StyleSheet, TextInput } from 'react-native';
 import { Text, View } from '@/components/Themed';
 import { useEffect, useState, useCallback } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
-import { storeString, getString } from '@/helpers/AsyncStorage';
 import {logout, authorize} from "@/helpers/Database"
-import { style } from 'd3';
+
+import Button from '@/components/Button';
 
 export default function SettingsScreen() {
-  const [apiUrl, setApiUrl] = useState('')
   const [token, onChangeToken] = useState('');
-  const [pairStatus, setPairStatus] = useState('')
   const [authResponse, setAuthResponse] = useState('');
 
   useEffect(() => {
     console.log("useEffect")
-    try {
-      getString('api-url').then((value: string | null | undefined) => {
-          if (value !== null && value !== undefined) {
-            console.log('item', value)
-            setApiUrl(value);
-          }
-      });
-    } catch (e) {
-      console.log(e)
-    }
   },[])
 
   // Only runs if the screen is currently focused
@@ -33,29 +21,8 @@ export default function SettingsScreen() {
     }, [])
   );
 
-  const storeData = async (value:string) => {
-    try {
-      setApiUrl(value)
-      await storeString('api-url', value);
-    } catch (e) {
-      console.log(e)
-    }
-  };
-
   return (
     <View style={styles.container}>
-      <View style={styles.api}>
-        <Text style={styles.label}>API URL</Text>
-        <TextInput
-              style={styles.inputField}
-              value={apiUrl}
-              onChangeText={(text:string) => storeData(text)}/>
-              <Pressable 
-          style={styles.buttonAlt} 
-          onPress={() => logout()}>
-          <Text>Log out</Text>        
-        </Pressable>
-      </View>
       <View style={styles.inputToken}>
         <Text style={styles.label}>Pair watch</Text>
         <View style={styles.pairStatus}>
@@ -68,10 +35,18 @@ export default function SettingsScreen() {
           value={token}
           placeholder='Enter auth token'/>
         <Button
-          title="Pair now"
-          color="green"
-          onPress={ async () => {setAuthResponse(await authorize(token)); onChangeToken('')} }/>
+          text='Pair now'
+          textColor='white'
+          bgColor='green'
+          action={async () => {setAuthResponse(await authorize(token)); onChangeToken('')}}/>
         <Text style={styles.responseText}>{authResponse}</Text>
+      </View>
+      <View style={styles.logoutBtn}>
+        <Button
+          text='Log out'
+          textColor='white'
+          bgColor='red'
+          action={logout}/>
       </View>
     </View>
   );
@@ -82,10 +57,9 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'column'
   },
-  api: {
-    flex: 1,
+  logoutBtn: {
     alignItems: 'center',
-    justifyContent: 'center',
+    margin: 12
   },
   inputToken: {
     flex: 1,
@@ -119,16 +93,5 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     padding: 10,
     width: '80%'
-  },
-  buttonAlt: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 12,
-    paddingHorizontal: 32,
-    borderRadius: 4,
-    elevation: 3,
-    width: 150,      
-    backgroundColor: 'gray',
-    margin: 8,
   },
 });
