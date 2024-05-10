@@ -4,7 +4,7 @@ import Card from '@/components/Card';
 import TabContainer from '@/components/TabContainer';
 import MonthlyStressGraph from '@/components/MonthlyStressGraph';
 import MostStressfullApps from '@/components/MostStressfullApps';
-import { BreakDownData, getBreakdown } from '@/helpers/Database';
+import { getBreakdown } from '@/helpers/Database';
 import { useEffect, useState } from 'react';
 import ErrorWithRetry from '@/components/ErrorWithRetry';
 

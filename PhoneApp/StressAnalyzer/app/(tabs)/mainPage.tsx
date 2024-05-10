@@ -10,26 +10,13 @@ import { notificationData, screenTimeData } from '@/constants/DummyData';
 import Card from '@/components/Card';
 import Stressometer from '@/components/Stressometer';
 import TabContainer from '@/components/TabContainer';
-import { StressMetrics, getStressMetrics } from '@/helpers/Database';
+import { getStressMetrics } from '@/helpers/Database';
 import ErrorWithRetry from '@/components/ErrorWithRetry';
 
 export default function HomeScreen() {
   const [stressMetrics, setStressMetrics] = useState<StressMetrics | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [currentDate, setCurrentDate] = useState<Date>(new Date())
-
-
-  function renderOverviewCardContent(metrics: StressMetrics): JSX.Element {
-    return <View style={styles.todayStressCard}>
-      <Stressometer stressValue={Math.round(metrics.latest)} />
-      <View style={styles.todayStressCardText}>
-        <Text>Average: {Math.round(metrics.average)}</Text>
-        <Text>Low: {Math.round(metrics.min)}</Text>
-        <Text>High: {Math.round(metrics.max)}</Text>
-      </View>
-    </View>
-  }
-
 
   useEffect(() => {
     let cancel = false;
@@ -51,24 +38,34 @@ export default function HomeScreen() {
     };
   }, [currentDate]);
 
-  function renderTodayStressCard() {
+  const OverviewCardContent = ({ metrics }: { metrics: StressMetrics }) => (
+    <View style={styles.todayStressCard}>
+      <Stressometer stressValue={Math.round(metrics.latest)} />
+      <View style={styles.todayStressCardText}>
+        <Text>Average: {Math.round(metrics.average)}</Text>
+        <Text>Low: {Math.round(metrics.min)}</Text>
+        <Text>High: {Math.round(metrics.max)}</Text>
+      </View>
+    </View>
+  );
+
+  const TodayStressCard = () => {
     if (stressMetrics != null) {
-      return renderOverviewCardContent(stressMetrics);
+      return (<OverviewCardContent metrics={stressMetrics} />);
     } else if (error != null) {
-      return <ErrorWithRetry errorText={error} retry={() => setCurrentDate(new Date())} />
-    } else {
-      return <>
-        <ActivityIndicator size="large" />
-        <Text style={{ textAlign: 'center' }}>Loading...</Text>
-      </>;
+      return (<ErrorWithRetry errorText={error} retry={() => setCurrentDate(new Date())} />);
     }
+    return (<>
+      <ActivityIndicator size="large" />
+      <Text style={{ textAlign: 'center' }}>Loading...</Text>
+    </>);
   }
 
   return (
     <TabContainer headerText='Home'>
       <Button title='refresh' onPress={() => setCurrentDate(new Date())} />
       <Card cardTitle="Today's Stress">
-        {renderTodayStressCard()}
+        <TodayStressCard />
       </Card>
     </TabContainer>
   );

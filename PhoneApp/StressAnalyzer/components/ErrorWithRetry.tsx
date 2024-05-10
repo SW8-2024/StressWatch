@@ -5,9 +5,9 @@ interface Props {
 }
 
 export default function ErrorWithRetry({ errorText, retry: callback }: Props): JSX.Element {
-    return <>
+    return (<>
         <Text>An error occured :(</Text>
         <Text>{errorText}</Text>
         <Button title="Retry" onPress={callback} />
-    </>;
+    </>);
 }

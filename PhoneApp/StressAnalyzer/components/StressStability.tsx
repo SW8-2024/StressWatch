@@ -1,4 +1,3 @@
-import { StressByApp } from '@/helpers/Database';
 import React from 'react';
 import { BarChart, barDataItem as BarDataItem } from "react-native-gifted-charts";
 
@@ -13,7 +12,7 @@ const relaxingAppColor = "#559D49";
 export default function MostStressfullApps({stressByApp, stressAverage}: Props): JSX.Element {
     const coloredData = stressByApp.map((v, i) => ({
         value: v.value,
-        label: v.appName,
+        label: v.name,
         frontColor: v.value > stressAverage ? stressfulAppColor : relaxingAppColor
     }));
 

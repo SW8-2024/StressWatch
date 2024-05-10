@@ -29,22 +29,6 @@ async function fetchWithAuth(url: string, options?: RequestInit | undefined): Pr
   return fetch(url, options); ``
 }
 
-export interface StressByApp {
-  name: string;
-  value: number;
-}
-
-export interface StressDataPoint {
-  date: Date;
-  value: number;
-}
-
-export interface BreakDownData {
-  averageStress: number;
-  dailyStressDataPoints: StressDataPoint[];
-  stressByApp: StressByApp[];
-}
-
 interface RemoteBreakDownData {
   averageStress: number;
   dailyStressDataPoints: (Omit<StressDataPoint, 'date'> & {date: string})[];
@@ -70,13 +54,6 @@ export async function getBreakdown(date: Date): Promise<BreakDownData> {
   }
 
   return mapBreakDownDataToInternal(await response.json());
-}
-
-export interface StressMetrics {
-  average: number;
-  min: number;
-  max: number;
-  latest: number;
 }
 
 export async function getStressMetrics(date: Date): Promise<StressMetrics> {

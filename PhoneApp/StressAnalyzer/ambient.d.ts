@@ -1,4 +1,4 @@
-import  * as moduleTypes from "@/modules/app-usage/src/AppUsage.types";
+import * as moduleTypes from "@/modules/app-usage/src/AppUsage.types";
 
 declare global {
     interface EventUsageRawData {
@@ -23,9 +23,9 @@ declare global {
 
     interface Session {
         from: DateTime,
-        to: dateTime,         
+        to: dateTime,
     }
-   
+
     interface AppUsageResponse {
         id: number,
         appName: string,
@@ -33,4 +33,28 @@ declare global {
         to: DateTime,
     }
     type UsageDataEvent = moduleTypes.UsageDataEvent;
+
+    interface StressByApp {
+        name: string;
+        value: number;
+    }
+
+    interface StressDataPoint {
+        date: Date;
+        value: number;
+    }
+
+    interface BreakDownData {
+        averageStress: number;
+        dailyStressDataPoints: StressDataPoint[];
+        stressByApp: StressByApp[];
+    }
+    
+    interface StressMetrics {
+        average: number;
+        min: number;
+        max: number;
+        latest: number;
+    }
+
 }
