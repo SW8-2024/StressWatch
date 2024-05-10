@@ -8,8 +8,8 @@ import { login } from '@/helpers/Database';
 import { ChillChaser } from '@/components/name'
 
 export default function loginScreen () {
-  const [email, setEmail] = useState('test@.com') //Default values for testing
-  const [password, setPassword] = useState('Password1!')
+  const [email, setEmail] = useState('a@a.dk') //Default values for testing
+  const [password, setPassword] = useState('abcABC1!')
   const [wrongCredentials, setWrongCredentials] = useState(false)
   const [hidePassword, setHidePassword] = useState(true)
   const [authing, setAuthing] = useState(false)

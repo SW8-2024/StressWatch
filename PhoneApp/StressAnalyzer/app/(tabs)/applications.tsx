@@ -6,6 +6,7 @@ import { Link } from 'expo-router';
 import Card from '@/components/Card';
 import { screenTimeData } from '@/constants/DummyData';
 import FontAwesome5 from '@expo/vector-icons/build/FontAwesome5';
+import TabContainer from '@/components/TabContainer';
 
 
 export default function ApplicationsScreen() {
@@ -42,9 +43,8 @@ export default function ApplicationsScreen() {
       )
 
     return (
-        <View style={{flex: 2}}>
-        <View style={styles.containerLabelsContainer}><Text style={styles.containerLabelsText}>Apps</Text></View>
-        <Card>
+      <TabContainer headerText='Apps'>
+        <Card noPadding>
           <FlatList
             data={screenTimeData}
             renderItem={renderAppsItem}
@@ -52,7 +52,7 @@ export default function ApplicationsScreen() {
             ListHeaderComponentStyle={styles.flatlistHeaderTextContainer}
             stickyHeaderIndices={[0]}/>
         </Card>
-      </View>
+      </TabContainer>
     );
 }
 
