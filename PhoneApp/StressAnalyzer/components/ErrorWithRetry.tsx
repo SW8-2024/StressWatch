@@ -6,11 +6,11 @@ interface Props {
 }
 
 export default function ErrorWithRetry({ errorText, retry: callback }: Props): JSX.Element {
-    return <>
+    return (<>
         <Text style={styles.whiteText}>An error occured :(</Text>
         <Text style={styles.whiteText}>{errorText}</Text>
         <Button title="Retry" onPress={callback} />
-    </>;
+    </>);
 }
 
 const styles = StyleSheet.create({

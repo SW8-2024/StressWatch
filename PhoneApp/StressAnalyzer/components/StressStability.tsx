@@ -1,4 +1,3 @@
-import { StressByApp } from '@/helpers/Database';
 import React from 'react';
 import { BarChart, barDataItem as BarDataItem } from "react-native-gifted-charts";
 

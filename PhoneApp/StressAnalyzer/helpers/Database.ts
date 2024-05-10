@@ -29,42 +29,10 @@ async function fetchWithAuth(url: string, options?: RequestInit | undefined): Pr
   return fetch(url, options); ``
 }
 
-export interface StressByApp {
-  name: string;
-  value: number;
-}
-
-export interface StressDataPoint {
-  date: Date;
-  value: number;
-}
-
-export interface BreakDownData {
-  averageStress: number;
-  dailyStressDataPoints: StressDataPoint[];
-  stressByApp: StressByApp[];
-}
-
 interface RemoteBreakDownData {
   averageStress: number;
   dailyStressDataPoints: (Omit<StressDataPoint, 'date'> & {date: string})[];
   stressByApp: StressByApp[];
-}
-
-export interface StressMetrics {
-  average: number;
-  min: number;
-  max: number;
-  latest: number;
-}
-
-export interface AppAnalysisData {
-  name: string;
-  averageStress: number;
-  referenceStress: string;
-  usageHours: number;
-  usageMinutes: number;
-  usageSeconds: number;
 }
 
 interface RemoteAppUsageAnalysis {

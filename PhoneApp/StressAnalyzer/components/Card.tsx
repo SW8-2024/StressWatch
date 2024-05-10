@@ -11,8 +11,8 @@ interface CardProps {
 export default function Card({ children, cardTitle, cardSubTitle, noPadding }: CardProps): JSX.Element {
     return (
         <View style={{...styles.card, padding: noPadding == true ? 0 : 10}}>
-            {cardTitle ? <Text style={styles.titleStyle}>{cardTitle}</Text> : ""}
-            {cardSubTitle ? <Text style={styles.subTitleStyle}>{cardSubTitle}</Text> : ""}
+            {cardTitle ? (<Text style={styles.titleStyle}>{cardTitle}</Text>) : ""}
+            {cardSubTitle ? (<Text style={styles.subTitleStyle}>{cardSubTitle}</Text>) : ""}
             {children}
         </View>
     );

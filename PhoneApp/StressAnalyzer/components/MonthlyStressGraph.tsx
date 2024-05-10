@@ -1,4 +1,3 @@
-import { StressDataPoint } from '@/helpers/Database';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { BarChart, barDataItem as BarDataItem } from "react-native-gifted-charts";
