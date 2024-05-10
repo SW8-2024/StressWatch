@@ -1,4 +1,4 @@
-import { ActivityIndicator, Button, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, Button, RefreshControl, SafeAreaView, ScrollView, StyleSheet, View } from 'react-native';
 import { Text } from '@/components/Themed';
 import Card from '@/components/Card';
 import TabContainer from '@/components/TabContainer';
@@ -12,6 +12,8 @@ export default function AnalysisScreen(): JSX.Element {
   const [breakDownData, setBreakDownData] = useState<BreakDownData | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [currentDate, setCurrentDate] = useState<Date>(new Date());
+  const [refreshing, setRefreshing] = useState(false);
+
 
   useEffect(() => {
     let cancel = false;
@@ -23,7 +25,11 @@ export default function AnalysisScreen(): JSX.Element {
         }
       } catch (e) {
         setError((e ?? "unknown error").toString());
-      }
+      } finally {
+          if (!cancel) {
+            setRefreshing(false);
+          }
+    }
     })();
     return () => {
       setError(null);
@@ -57,9 +63,15 @@ export default function AnalysisScreen(): JSX.Element {
   };
 
   return (
-    <TabContainer headerText='Stress breakdown per month'>
-      <Button title='refresh' onPress={() => setCurrentDate(new Date())}/>
-      <Breakdown />
-    </TabContainer>
+    <SafeAreaView>
+      <ScrollView
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={() => setCurrentDate(new Date())} />
+        }>
+        <TabContainer headerText='Stress breakdown per month'>
+          <Breakdown />
+        </TabContainer>
+      </ScrollView>
+    </SafeAreaView>
   );
 }

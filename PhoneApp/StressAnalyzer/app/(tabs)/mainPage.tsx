@@ -12,16 +12,16 @@ import Stressometer from '@/components/Stressometer';
 import TabContainer from '@/components/TabContainer';
 import { getStressMetrics } from '@/helpers/Database';
 import ErrorWithRetry from '@/components/ErrorWithRetry';
-import React from 'react';
 
 export default function HomeScreen() {
   const [stressMetrics, setStressMetrics] = useState<StressMetrics | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [currentDate, setCurrentDate] = useState<Date>(new Date())
-  const [refreshing] = React.useState(false);
+  const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
     let cancel = false;
+    setRefreshing(true);
     (async () => {
       try {
         console.log('sending request', new Date());
@@ -32,6 +32,10 @@ export default function HomeScreen() {
         }
       } catch (e) {
         setError((e ?? "unknown error").toString());
+      } finally {
+          if (!cancel) {
+            setRefreshing(false);
+          }
       }
     })();
     return () => {
@@ -65,7 +69,7 @@ export default function HomeScreen() {
 
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView>
       <ScrollView
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={() => setCurrentDate(new Date())} />
