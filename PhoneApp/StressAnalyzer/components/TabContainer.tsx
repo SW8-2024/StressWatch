@@ -6,14 +6,12 @@ interface CardProps {
     headerText: string;
 }
 
-export default function Card({ children, headerText }: CardProps): JSX.Element {
+export default function TabContainer({ children, headerText }: CardProps): JSX.Element {
     return (
-        <ScrollView style={styles.scrollView}>
-            <View style={styles.contentContainer}>
-                <Text style={styles.headerStyle}>{headerText}</Text>
-                {children}
-            </View>
-        </ScrollView>
+        <View style={styles.contentContainer}>
+            <Text style={styles.headerStyle}>{headerText}</Text>
+            {children}
+        </View>
     );
 }
 
