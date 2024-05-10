@@ -4,15 +4,24 @@ import { StyleSheet, View, Text, ScrollView } from 'react-native';
 interface CardProps {
     children: ReactNode;
     headerText: string;
+    noScroll?: boolean
 }
 
-export default function Card({ children, headerText }: CardProps): JSX.Element {
+export default function Card({ children, headerText, noScroll }: CardProps): JSX.Element {
+    let CardView = () => (
+        <View style={styles.contentContainer}>
+            <Text style={styles.headerStyle}>{headerText}</Text>
+            {children}
+        </View>
+    );
+
+    if (noScroll == true) {
+        return <CardView />;
+    }
+
     return (
         <ScrollView style={styles.scrollView}>
-            <View style={styles.contentContainer}>
-                <Text style={styles.headerStyle}>{headerText}</Text>
-                {children}
-            </View>
+            <CardView />
         </ScrollView>
     );
 }
