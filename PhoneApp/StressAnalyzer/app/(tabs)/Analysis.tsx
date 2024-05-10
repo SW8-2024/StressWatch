@@ -8,26 +8,6 @@ import { BreakDownData, getBreakdown } from '@/helpers/Database';
 import { useEffect, useState } from 'react';
 import ErrorWithRetry from '@/components/ErrorWithRetry';
 
-
-
-function renderWithData(breakDownData: BreakDownData): JSX.Element {
-  return <>
-    <Card cardTitle='Stress graph'>
-      <MonthlyStressGraph stressAverage={breakDownData.averageStress} dataPoints={breakDownData.dailyStressDataPoints} />
-    </Card>
-    <Card cardTitle='Most stressful apps'>
-      <MostStressfullApps stressAverage={breakDownData.averageStress} stressByApp={breakDownData.stressByApp} />
-    </Card>
-  </>
-}
-
-function renderLoading(): JSX.Element {
-  return <>
-    <ActivityIndicator size="large" />
-    <Text style={{ textAlign: 'center' }}>Crunching some numbers...</Text>
-  </>;
-}
-
 export default function AnalysisScreen(): JSX.Element {
   const [breakDownData, setBreakDownData] = useState<BreakDownData | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -51,23 +31,35 @@ export default function AnalysisScreen(): JSX.Element {
     };
   }, [currentDate]);
 
-  let innerContent = <></>;
-  if (error != null) {
-    innerContent = <ErrorWithRetry errorText={error} retry={() => setCurrentDate(new Date())} />;
-  } else if (breakDownData != null) {
-    innerContent = renderWithData(breakDownData);
-  } else {
-    innerContent = renderLoading();
-  }
+  const GraphsWithData = ({breakDownData}: {breakDownData: BreakDownData}) => (
+    <>
+      <Card cardTitle='Stress graph'>
+        <MonthlyStressGraph stressAverage={breakDownData.averageStress} dataPoints={breakDownData.dailyStressDataPoints} />
+      </Card>
+      <Card cardTitle='Most stressful apps'>
+        <MostStressfullApps stressAverage={breakDownData.averageStress} stressByApp={breakDownData.stressByApp} />
+      </Card>
+    </>
+  );
+
+  const Loading = () => (<>
+    <ActivityIndicator size="large" />
+    <Text style={{ textAlign: 'center' }}>Crunching some numbers...</Text>
+  </>);
+
+  const Breakdown = () => {
+    if (error != null) {
+      return (<ErrorWithRetry errorText={error} retry={() => setCurrentDate(new Date())} />);
+    } else if (breakDownData != null) {
+      return (<GraphsWithData breakDownData={breakDownData} />);
+    }
+    return (<Loading />);
+  };
 
   return (
     <TabContainer headerText='Stress breakdown per month'>
       <Button title='refresh' onPress={() => setCurrentDate(new Date())}/>
-      {innerContent}
+      <Breakdown />
     </TabContainer>
   );
 }
-
-const styles = StyleSheet.create({
-
-});
