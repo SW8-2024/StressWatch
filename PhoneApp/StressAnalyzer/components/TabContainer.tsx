@@ -8,20 +8,22 @@ interface CardProps {
 }
 
 export default function Card({ children, headerText, noScroll }: CardProps): JSX.Element {
-    let inner = <View style={styles.contentContainer}>
-        <Text style={styles.headerStyle}>{headerText}</Text>
-        {children}
-    </View>;
+    let CardView = () => (
+        <View style={styles.contentContainer}>
+            <Text style={styles.headerStyle}>{headerText}</Text>
+            {children}
+        </View>
+    );
+
     if (noScroll == true) {
-        return inner;
-    } else {
-        return (
-            <ScrollView style={styles.scrollView}>
-                {inner}
-            </ScrollView>
-        );
+        return <CardView />;
     }
-    
+
+    return (
+        <ScrollView style={styles.scrollView}>
+            <CardView />
+        </ScrollView>
+    );
 }
 
 const styles = StyleSheet.create({

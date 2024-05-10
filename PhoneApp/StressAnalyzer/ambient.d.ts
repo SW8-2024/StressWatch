@@ -49,7 +49,6 @@ declare global {
         dailyStressDataPoints: StressDataPoint[];
         stressByApp: StressByApp[];
     }
-
     interface StressMetrics {
         average: number;
         min: number;
