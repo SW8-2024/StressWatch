@@ -22,11 +22,6 @@ export default function HomeScreen() {
     let cancel = false;
     (async () => {
       try {
-<<<<<<< HEAD
-=======
-        console.log('sending request', new Date());
-
->>>>>>> 14924fd69f37b41466d61631cb6282c42e46e007
         let stressMetrics = await getStressMetrics(currentDate);
         if (!cancel) {
           setStressMetrics(stressMetrics);
@@ -36,10 +31,7 @@ export default function HomeScreen() {
       }
     })();
     return () => {
-<<<<<<< HEAD
       setStressMetrics(null);
-=======
->>>>>>> 14924fd69f37b41466d61631cb6282c42e46e007
       setError(null);
       cancel = true;
     };
