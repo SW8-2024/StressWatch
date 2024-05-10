@@ -1,7 +1,6 @@
 import { getAppIconFromName } from '@/helpers/appUsage';
 import { StyleSheet, Image, View} from 'react-native';
 
-let packageName = "com.moonton.mobilehero"
 export const AppIcon = function AppIcon({ packageName } : {packageName : string}){
     const icon = getAppIconFromName(packageName);
 
@@ -9,7 +8,7 @@ export const AppIcon = function AppIcon({ packageName } : {packageName : string}
         return <View style={styles.backupIcon}/>
     }else{
         return <Image style={styles.icon} source={{uri:`data:image/jpeg;base64, ${icon}`} } />
-    }    
+    }
 };
 
 const styles = StyleSheet.create({
