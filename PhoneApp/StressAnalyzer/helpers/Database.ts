@@ -29,35 +29,29 @@ async function fetchWithAuth(url: string, options?: RequestInit | undefined): Pr
   return fetch(url, options); ``
 }
 
-interface RemoteBreakDownData {
-  averageStress: number;
-  dailyStressDataPoints: (Omit<StressDataPoint, 'date'> & {date: string})[];
-  stressByApp: StressByApp[];
-}
-
-function mapBreakDownDataToInternal(data: RemoteBreakDownData): BreakDownData {
-  return {
-    averageStress: data.averageStress,
-    dailyStressDataPoints: data.dailyStressDataPoints.map(v => ({
-      date: new Date(v.date),
-      value: v.value
-    })),
-    stressByApp: data.stressByApp
-  };
-}
-
-export async function getBreakdown(date: Date): Promise<BreakDownData> {
-  const endpointUrl: string = serverLocation + "api/DataCollection/breakdown";
+export async function getBreakdown(date: Date): Promise<RemoteBreakDownData> {
+  const endpointUrl: string = serverLocation + "api/DataAnalysis/breakdown";
   const response: Response = await fetchWithAuth(`${endpointUrl}?date=${date.toISOString()}`);
   if (response.status != 200) {
     throw new Error(`Got status ${response.status} while trying to get breakdown`)
   }
 
-  return mapBreakDownDataToInternal(await response.json());
+  return await response.json();
+}
+
+
+export async function getAppAnalysis(): Promise<RemoteAppAnalysisData> {
+  const endpointUrl: string = serverLocation + "api/DataAnalysis/app-breakdown";
+  const response: Response = await fetchWithAuth(endpointUrl);
+  if (response.status != 200) {
+    throw new Error(`Got status ${response.status} while trying to get app-breakdown`);
+  }
+
+  return await response.json();
 }
 
 export async function getStressMetrics(date: Date): Promise<StressMetrics> {
-  const endpointUrl: string = serverLocation + "api/DataCollection/stress-metrics";
+  const endpointUrl: string = serverLocation + "api/DataAnalysis/stress-metrics";
   const response: Response = await fetchWithAuth(`${endpointUrl}?date=${date.toISOString()}`);
   if (response.status != 200) {
     throw new Error(`Got status ${response.status} while trying to get breakdown`)
@@ -67,7 +61,7 @@ export async function getStressMetrics(date: Date): Promise<StressMetrics> {
 }
 
 export async function sendUsageData(data: EventUsageTransformedData[]) {
-  const url: string = serverLocation + "api/DataCollection/app-usage";
+  const url: string = serverLocation + "api/DataAnalysis/app-usage";
   let response: Response = await fetchWithAuth(url, {
     method: 'POST',
     headers: {
