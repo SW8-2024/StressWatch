@@ -47,7 +47,7 @@ function mapBreakDownDataToInternal(data: RemoteBreakDownData): BreakDownData {
 }
 
 export async function getBreakdown(date: Date): Promise<BreakDownData> {
-  const endpointUrl: string = serverLocation + "api/DataCollection/breakdown";
+  const endpointUrl: string = serverLocation + "api/DataAnalysis/breakdown";
   const response: Response = await fetchWithAuth(`${endpointUrl}?date=${date.toISOString()}`);
   if (response.status != 200) {
     throw new Error(`Got status ${response.status} while trying to get breakdown`)
@@ -57,7 +57,7 @@ export async function getBreakdown(date: Date): Promise<BreakDownData> {
 }
 
 export async function getStressMetrics(date: Date): Promise<StressMetrics> {
-  const endpointUrl: string = serverLocation + "api/DataCollection/stress-metrics";
+  const endpointUrl: string = serverLocation + "api/DataAnalysis/stress-metrics";
   const response: Response = await fetchWithAuth(`${endpointUrl}?date=${date.toISOString()}`);
   if (response.status != 200) {
     throw new Error(`Got status ${response.status} while trying to get breakdown`)
@@ -80,7 +80,7 @@ export async function sendUsageData(data: EventUsageTransformedData[]) {
 }
 
 export async function receiveUsageData() {
-  const url: string = serverLocation + "api/DataCollection/app-usage";
+  const url: string = serverLocation + "api/DataAnalysis/app-usage";
   let response = await fetchWithAuth(url, {
     method: 'GET',
     headers: {
