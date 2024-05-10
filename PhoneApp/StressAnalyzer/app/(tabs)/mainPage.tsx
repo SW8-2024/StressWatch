@@ -1,138 +1,73 @@
-import { FlatList, Pressable, StyleSheet, useColorScheme } from 'react-native';
+import { ActivityIndicator, Button, FlatList, Pressable, StyleSheet, useColorScheme } from 'react-native';
 import { Text, View } from '@/components/Themed';
 import { BarChart, barDataItem } from "react-native-gifted-charts";
 import { Image } from "react-native";
 import { Link } from 'expo-router';
-import { useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { FontAwesome5 } from '@expo/vector-icons';
 import Colors from '@/constants/Colors';
-import { graphData, notificationData, screenTimeData } from '@/constants/DummyData';
+import { notificationData, screenTimeData } from '@/constants/DummyData';
 import Card from '@/components/Card';
 import Stressometer from '@/components/Stressometer';
-
-const dataToColoredData = (data:barDataItem[]) : barDataItem[] => {
-  var coloredData:barDataItem[] = data
-  coloredData = coloredData.map(item => {item.frontColor = valueToColor(item.value); return item})
-  return coloredData
-}
-
-const valueToColor = (value:number) : string => {
-  if(value < 44){
-    return '#36890E'
-  }
-  else if (value < 60){
-    return '#CFA613'
-  }
-  else if (value < 80){
-    return '#AF2C03'
-  }
-  else{
-    return '#AF0303'
-  }
-}
-
-const coloredData = dataToColoredData(graphData)
+import TabContainer from '@/components/TabContainer';
+import { getStressMetrics } from '@/helpers/Database';
+import ErrorWithRetry from '@/components/ErrorWithRetry';
 
 export default function HomeScreen() {
-  const colorScheme = useColorScheme() ?? 'light';
-  const [date, setDate] = useState(new Date());
-  
-  const showPreviousMonth = () => {
-    setDate(prev => new Date(prev.setMonth(prev.getMonth()-1)))
-  };
+  const [stressMetrics, setStressMetrics] = useState<StressMetrics | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [currentDate, setCurrentDate] = useState<Date>(new Date())
 
-  const showNextMonth = () => {
-    setDate(prev => new Date(prev.setMonth(prev.getMonth()+1)))
-  };
-  
-  const renderNotificationHeader = () => {  
-    return (
-      <View style={styles.flatlistItemContainer}>
-        <View style={{flex: 5, backgroundColor: 'transparent', alignItems: 'center', justifyContent: 'center'}}><Text style={{fontWeight: 'bold'}}>Topic</Text></View>
-        <View style={styles.flatlistItemTextContainer}><Text style={{fontWeight: 'bold'}}>Avg. Stress</Text></View>
-        <View style={styles.flatlistItemTextContainer}><Text style={{fontWeight: 'bold'}}>Amount</Text></View>
+  useEffect(() => {
+    let cancel = false;
+    (async () => {
+      try {
+        console.log('sending request', new Date());
+
+        let stressMetrics = await getStressMetrics(currentDate);
+        if (!cancel) {
+          setStressMetrics(stressMetrics);
+        }
+      } catch (e) {
+        setError((e ?? "unknown error").toString());
+      }
+    })();
+    return () => {
+      setError(null);
+      cancel = true;
+    };
+  }, [currentDate]);
+
+  const OverviewCardContent = ({ metrics }: { metrics: StressMetrics }) => (
+    <View style={styles.todayStressCard}>
+      <Stressometer stressValue={Math.round(metrics.latest)} />
+      <View style={styles.todayStressCardText}>
+        <Text>Average: {Math.round(metrics.average)}</Text>
+        <Text>Low: {Math.round(metrics.min)}</Text>
+        <Text>High: {Math.round(metrics.max)}</Text>
       </View>
-    )
-  }
-  
-  const renderNotificationItem = ({item, index}: { item: any, index: number}) => {  
-    return (
-      <Link href={{pathname: "/notification", params: { date: date.getTime(), topic: item.topic }}} asChild>
-        <Pressable style={styles.flatlistItemContainer}>
-          <View style={{ flex: 5, backgroundColor: 'transparent', justifyContent: 'center'}}><Text>{item.topic}</Text></View>
-          <View style={styles.flatlistItemTextContainer}><Text>{item.averageStress}</Text></View>
-          <View style={styles.flatlistItemTextContainer}><Text>{item.amount}</Text></View>
-        </Pressable>
-      </Link>
-    )
+    </View>
+  );
+
+  const TodayStressCard = () => {
+    if (stressMetrics != null) {
+      return (<OverviewCardContent metrics={stressMetrics} />);
+    } else if (error != null) {
+      return (<ErrorWithRetry errorText={error} retry={() => setCurrentDate(new Date())} />);
+    }
+    return (<>
+      <ActivityIndicator size="large" />
+      <Text style={{ textAlign: 'center' }}>Loading...</Text>
+    </>);
   }
 
   return (
-    <View style={styles.container}>
-      <View style={styles.monthContainer}>
-        <Pressable onPress={showPreviousMonth}>
-          <FontAwesome5
-            name="chevron-left"
-            size={24}
-            color={Colors[colorScheme].text}
-            style={styles.arrowButtons}
-          />
-        </Pressable>
-        <Text style={styles.monthText}>{date.toLocaleString('default', { month: 'long' })}</Text>
-        <Pressable onPress={showNextMonth}>
-          <FontAwesome5
-            name="chevron-right"
-            size={24}
-            color={Colors[colorScheme].text}
-            style={styles.arrowButtons}
-          />
-        </Pressable>
-      </View>
-      <View style={{flex: 3}}>
-        <View style={styles.graphContainer}>
-          <View style={styles.graph}>
-            <BarChart 
-            data={coloredData}
-            roundedTop
-            barWidth={8}
-            yAxisColor={'white'}
-            yAxisTextStyle={{color: 'white'}}
-            xAxisColor={'white'}
-            xAxisLabelTextStyle={{color: 'white', marginLeft: -7}}
-            isAnimated
-            noOfSections={5}
-            spacing={2}
-            onPress = {(item:barDataItem,index:number)=>console.log('item',item)}
-            yAxisLabelWidth={30}
-            labelWidth={15}
-            initialSpacing={0}/>
-          </View>
-        </View>
-      </View>
-      <View style={{flex: 2}}>
-        <View style={styles.containerLabelsContainer}><Text style={styles.containerLabelsText}>Today's Stress</Text></View>
-        <Card>
-          <View style={styles.todayStressCard}>
-            <Stressometer stressValue={30}/>
-            <View style={styles.todayStressCardText}>
-              <Text>Average: 30</Text>
-              <Text>Low: 10</Text>
-              <Text>High: 60</Text>
-            </View>
-          </View>
-        </Card>
-      </View>
-      <View style={{flex: 2}}>
-        <View style={styles.containerLabelsContainer}><Text style={styles.containerLabelsText}>Notifications</Text></View>
-        <Card>
-          <FlatList
-            data={notificationData}
-            renderItem={renderNotificationItem}
-            ListHeaderComponent={renderNotificationHeader}
-            stickyHeaderIndices={[0]}/>
-        </Card>
-      </View>
-    </View>
+    <TabContainer headerText='Home'>
+      <Button title='refresh' onPress={() => setCurrentDate(new Date())} />
+      <Card cardTitle="Today's Stress">
+        <TodayStressCard />
+      </Card>
+    </TabContainer>
   );
 }
 
@@ -154,14 +89,6 @@ const styles = StyleSheet.create({
     marginLeft: 20,
     marginRight: 20,
   },
-  graphContainer: {
-    flex: 1,
-  },
-  graph: {
-    flex: 1,
-    marginTop: 20,
-    backgroundColor: 'black',
- },
   containerLabelsContainer: {
     justifyContent: 'center',
     alignItems: 'center',
