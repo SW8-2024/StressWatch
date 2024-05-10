@@ -65,4 +65,22 @@ declare global {
         usageMinutes: number;
         usageSeconds: number;
     }
+
+    interface RemoteBreakDownData {
+        averageStress: number;
+        dailyStressDataPoints: (Omit<StressDataPoint, 'date'> & { date: string })[];
+        stressByApp: StressByApp[];
+    }
+
+    interface RemoteAppUsageAnalysis {
+        name: string;
+        averageStress: number;
+        referenceStress: string;
+        usage: string;
+    }
+
+    interface RemoteAppAnalysisData {
+        appUsageAnalysis: RemoteAppUsageAnalysis[]
+    }
+
 }

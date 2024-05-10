@@ -8,6 +8,7 @@ import { getBreakdown } from '@/helpers/Database';
 import { useEffect, useState } from 'react';
 import ErrorWithRetry from '@/components/ErrorWithRetry';
 import AnalysisLoading from '@/components/AnalysisLoading';
+import { mapBreakDownDataToInternal } from '@/helpers/mappers';
 
 export default function AnalysisScreen(): JSX.Element {
   const [breakDownData, setBreakDownData] = useState<BreakDownData | null>(null);
@@ -20,7 +21,7 @@ export default function AnalysisScreen(): JSX.Element {
       try {
         let breakdown = await getBreakdown(currentDate);
         if (!cancel) {
-          setBreakDownData(breakdown);
+          setBreakDownData(mapBreakDownDataToInternal(breakdown));
         }
       } catch (e) {
         setError((e ?? "unknown error").toString());

@@ -7,9 +7,10 @@ import Card from '@/components/Card';
 import { screenTimeData } from '@/constants/DummyData';
 import FontAwesome5 from '@expo/vector-icons/build/FontAwesome5';
 import TabContainer from '@/components/TabContainer';
-import { AppAnalysisData, getAppAnalysis } from '@/helpers/Database';
+import { getAppAnalysis } from '@/helpers/Database';
 import ErrorWithRetry from '@/components/ErrorWithRetry';
 import AnalysisLoading from '@/components/AnalysisLoading';
+import { mapAppAnalysisData } from '@/helpers/mappers';
 
 
 const tinderImage = require("@/assets/images/TinderImage.png");
@@ -26,7 +27,7 @@ export default function ApplicationsScreen() {
       try {
         let appAnalysis = await getAppAnalysis();
         if (!cancel) {
-          setAppAnalysisData(appAnalysis);
+          setAppAnalysisData(appAnalysis.appUsageAnalysis.map(mapAppAnalysisData));
         }
       } catch (e) {
         setError((e ?? "unknown error").toString());

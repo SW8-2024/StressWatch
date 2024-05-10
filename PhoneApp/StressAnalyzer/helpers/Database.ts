@@ -29,69 +29,25 @@ async function fetchWithAuth(url: string, options?: RequestInit | undefined): Pr
   return fetch(url, options); ``
 }
 
-interface RemoteBreakDownData {
-  averageStress: number;
-  dailyStressDataPoints: (Omit<StressDataPoint, 'date'> & {date: string})[];
-  stressByApp: StressByApp[];
-}
-
-interface RemoteAppUsageAnalysis {
-  name: string;
-  averageStress: number;
-  referenceStress: string;
-  usage: string;
-}
-
-interface RemoteAppAnalysisData {
-  appUsageAnalysis: RemoteAppUsageAnalysis[]
-}
-
-function mapAppAnalysisData(data: RemoteAppUsageAnalysis): AppAnalysisData {
-  let usageParsed = data.usage.match(/^([0-9]+):([0-9]+):([0-9]+)\.[0-9]+$/);
-  if (usageParsed?.length != 4) {
-    throw new Error("Could not parse app analysis data, got: " + JSON.stringify(usageParsed));
-  }
-  return {
-    name: data.name,
-    averageStress: data.averageStress,
-    referenceStress: data.referenceStress,
-    usageHours: Number(usageParsed[1]),
-    usageMinutes: Number(usageParsed[2]),
-    usageSeconds: Number(usageParsed[3])
-  };
-}
-
-function mapBreakDownDataToInternal(data: RemoteBreakDownData): BreakDownData {
-  return {
-    averageStress: data.averageStress,
-    dailyStressDataPoints: data.dailyStressDataPoints.map(v => ({
-      date: new Date(v.date),
-      value: v.value
-    })),
-    stressByApp: data.stressByApp
-  };
-}
-
-export async function getBreakdown(date: Date): Promise<BreakDownData> {
+export async function getBreakdown(date: Date): Promise<RemoteBreakDownData> {
   const endpointUrl: string = serverLocation + "api/DataAnalysis/breakdown";
   const response: Response = await fetchWithAuth(`${endpointUrl}?date=${date.toISOString()}`);
   if (response.status != 200) {
     throw new Error(`Got status ${response.status} while trying to get breakdown`)
   }
 
-  return mapBreakDownDataToInternal(await response.json());
+  return await response.json();
 }
 
 
-export async function getAppAnalysis(): Promise<AppAnalysisData[]> {
+export async function getAppAnalysis(): Promise<RemoteAppAnalysisData> {
   const endpointUrl: string = serverLocation + "api/DataAnalysis/app-breakdown";
   const response: Response = await fetchWithAuth(endpointUrl);
   if (response.status != 200) {
     throw new Error(`Got status ${response.status} while trying to get app-breakdown`);
   }
-  let unmapped: RemoteAppAnalysisData = await response.json();
 
-  return unmapped.appUsageAnalysis.map(mapAppAnalysisData);
+  return await response.json();
 }
 
 export async function getStressMetrics(date: Date): Promise<StressMetrics> {
