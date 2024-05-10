@@ -1,5 +1,5 @@
 import { TIME } from '@/constants/Time';
-import { getUsageStatsAsync, addUsageDataListener, getEventStatsInInterval } from '@/modules/app-usage';
+import { getUsageStatsAsync, addUsageDataListener, getEventStatsInInterval, getAppIcon } from '@/modules/app-usage';
 import { sendUsageData } from './Database';
 
 // Idea is that the database is updated with each call
@@ -24,7 +24,6 @@ export const getEventDataForToday = async () => {
 
 export const getEventDataByDate = async (startDate : Date, endDate : Date) => {
     return await getEventDataByMilli(startDate.valueOf(), endDate.valueOf());
-    
 }
 
 // Prints the sessions and total time for each application meant for debugging / check that it works for a specific phone
@@ -43,6 +42,10 @@ export const printEventDataByDate = async (startDate : Date, endDate : Date) => 
         })
     });
     console.log("A total of " + data.length + " applications.")
+}
+
+export const getAppIconFromName = (packageName : string) : string => {
+    return getAppIcon(packageName);
 }
 
 const _getEventData = async (startTime : number, endTime : number) => {

@@ -1,6 +1,6 @@
 import styles from './styles'
-import { Text, View, } from '../../components/Themed';
-import { TextInput, Pressable } from 'react-native';
+import { Text, View,  } from '../../components/Themed';
+import { TextInput, Pressable} from 'react-native';
 import { router } from 'expo-router';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useState } from 'react';
@@ -13,10 +13,9 @@ export default function loginScreen () {
   const [wrongCredentials, setWrongCredentials] = useState(false)
   const [hidePassword, setHidePassword] = useState(true)
   const [authing, setAuthing] = useState(false)
-  
   const toggleHidePassword = () => setHidePassword(!hidePassword)
-  
-  async function tryLogin () {    
+
+  async function tryLogin () {
     setAuthing(true);
     let success = await login(email, password);    
     setAuthing(false);
@@ -29,8 +28,8 @@ export default function loginScreen () {
   }
 
   return (
-    <View style={styles.container}>   
-        <ChillChaser></ChillChaser>     
+    <View style={styles.container}>
+        <ChillChaser/>
         <View style={styles.textboxContainer}>
           <Text style={styles.descriptiveText}>Email</Text>
           <View style={styles.inputBox}>
