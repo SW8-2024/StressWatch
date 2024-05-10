@@ -24,8 +24,6 @@ export default function HomeScreen() {
     setRefreshing(true);
     (async () => {
       try {
-        console.log('sending request', new Date());
-
         let stressMetrics = await getStressMetrics(currentDate);
         if (!cancel) {
           setStressMetrics(stressMetrics);
@@ -39,6 +37,7 @@ export default function HomeScreen() {
       }
     })();
     return () => {
+      setStressMetrics(null);
       setError(null);
       cancel = true;
     };
