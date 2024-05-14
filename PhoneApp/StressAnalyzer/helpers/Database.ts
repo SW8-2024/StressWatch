@@ -152,29 +152,19 @@ export async function login(email: string, password: string) {
   return ret;
 }
 
-export async function authorize(token: string) : Promise<string> {
-  const data = {
-    token: token
-  }
-
-  let url : string = serverLocation + "api/Watch/authorize";
-  let [authorized, accessToken] = await checkIfAuthorized();
-
-  if (!authorized) {
-    return "Not authorized";
-  }
-  
-  let response: Response = await fetch(url, {
+export async function authorize(token: string): Promise<string> {
+  const url: string = serverLocation + "api/Watch/authorize";
+  let response: Response = await fetchWithAuth(url, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'accept': '*/*',
-      'Authorization': 'Bearer ' + accessToken
-
+      'accept': '*/*'
     },
-    body: JSON.stringify(data),
+    body: JSON.stringify({
+      "token": token
+    }),
   })
-
+  
   if (response.status == 200){
     return `${response.status} Authorized`;
   } else {
