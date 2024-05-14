@@ -23,14 +23,14 @@ export default function TabLayout() {
         tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
         headerShown: false,
       }}>
-        <Tabs.Screen
+      <Tabs.Screen
         name="mainPage"
         options={{
           title: 'Home',
           tabBarIcon: ({ color }) => <TabBarIcon name="home" color={color} />,
         }}
       />
-        <Tabs.Screen
+      <Tabs.Screen
         name="Analysis"
         options={{
           title: 'Analysis',
