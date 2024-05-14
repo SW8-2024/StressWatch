@@ -1,23 +1,29 @@
 import { StyleSheet, TextInput } from 'react-native';
 import { Text, View } from '@/components/Themed';
-import { useEffect, useState, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
-import {logout, authorize} from "@/helpers/Database"
+import { logout, authorize } from "@/helpers/Database"
+import { getStressMetrics } from '@/helpers/Database';
 
 import Button from '@/components/Button';
 
 export default function SettingsScreen() {
   const [token, onChangeToken] = useState('');
   const [authResponse, setAuthResponse] = useState('');
-
-  useEffect(() => {
-    console.log("useEffect")
-  },[])
+  const [timeSinceUpdate, setTimeSinceUpdate] = useState('');
 
   // Only runs if the screen is currently focused
   useFocusEffect(
     useCallback(() => {
       setAuthResponse('');
+      (async () => {
+        let stressMetrics = await getStressMetrics(new Date());
+        if (stressMetrics.latestDateTime == "0001-01-01T00:00:00") {
+          setTimeSinceUpdate("no data")
+        } else {
+          setTimeSinceUpdate(stressMetrics.latestDateTime)
+        }
+      })();
     }, [])
   );
 
@@ -26,7 +32,7 @@ export default function SettingsScreen() {
       <View style={styles.inputToken}>
         <Text style={styles.label}>Pair watch</Text>
         <View style={styles.pairStatus}>
-          <Text style={styles.statusText}>Last received heart rate: 1 min ago</Text>
+          <Text style={styles.statusText}>Last received data: {timeSinceUpdate}</Text>
         </View>
         <TextInput
           style={styles.inputField}
