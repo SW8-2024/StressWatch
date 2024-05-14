@@ -3,6 +3,7 @@ import { useCallback, useEffect, useState } from 'react';
 import {getString} from "@/helpers/AsyncStorage";
 import {refreshAuthorization} from "@/helpers/Database";
 import * as Network from 'expo-network';
+import { sendData } from '@/helpers/sendData';
 
 
 export default function RedirectBasedOnLoginState() {
@@ -30,6 +31,9 @@ export default function RedirectBasedOnLoginState() {
       }
       setAppIsReady(true);
     }
+    if(loggedIn){
+      sendData();
+    }
     prepare();
   }, []);
 
@@ -45,11 +49,10 @@ export default function RedirectBasedOnLoginState() {
   }, [appIsReady]);
   
   if (!appIsReady) {
-    return null;
+    return null
   }else if (loggedIn){
-    return <Redirect href='/mainPage'/>
+    return <Redirect href='/tabs/mainPage'/>
   }else{
-    return <Redirect href='/login'/>
+    return <Redirect href='/login/login'/>
   }
-   
 }

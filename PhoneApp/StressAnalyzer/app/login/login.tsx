@@ -23,7 +23,7 @@ export default function loginScreen () {
         setWrongCredentials(true);
     }else{
         setWrongCredentials(false);
-        router.replace("/mainPage");
+        router.replace("../tabs/mainPage");
     }
   }
 
@@ -65,7 +65,7 @@ export default function loginScreen () {
         </Pressable>
         <Pressable
           style={styles.buttonAlt}
-          onPress={() => router.navigate('/createAccount')}>
+          onPress={() => router.navigate('/login/createAccount')}>
           <Text style={styles.buttonText}>Create new account</Text>
         </Pressable>
     </View>
