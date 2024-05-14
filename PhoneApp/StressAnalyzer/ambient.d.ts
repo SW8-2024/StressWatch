@@ -49,13 +49,38 @@ declare global {
         dailyStressDataPoints: StressDataPoint[];
         stressByApp: StressByApp[];
     }
-    
     interface StressMetrics {
         average: number;
         min: number;
         max: number;
         latest: number;
         latestDateTime: string;
+    }
+
+    interface AppAnalysisData {
+        name: string;
+        averageStress: number;
+        referenceStress: string;
+        usageHours: number;
+        usageMinutes: number;
+        usageSeconds: number;
+    }
+
+    interface RemoteBreakDownData {
+        averageStress: number;
+        dailyStressDataPoints: (Omit<StressDataPoint, 'date'> & { date: string })[];
+        stressByApp: StressByApp[];
+    }
+
+    interface RemoteAppUsageAnalysis {
+        name: string;
+        averageStress: number;
+        referenceStress: string;
+        usage: string;
+    }
+
+    interface RemoteAppAnalysisData {
+        appUsageAnalysis: RemoteAppUsageAnalysis[]
     }
 
 }

@@ -24,7 +24,7 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.chillchasers.ChillChaser"      
+      "package": "com.chillchasers.ChillChaser"
     },
     "web": {
       "bundler": "metro",
