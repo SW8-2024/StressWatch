@@ -87,6 +87,7 @@ export async function receiveUsageData() {
     throw new Error("Got status " + response.status + " while trying to get usage data");
   }
 }
+
 export async function register(email: string, password: string): Promise<any> {
   let url = serverLocation + "register";
   let ret: any = new Response();
