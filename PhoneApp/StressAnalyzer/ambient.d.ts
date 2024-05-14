@@ -55,6 +55,7 @@ declare global {
         min: number;
         max: number;
         latest: number;
+        latestDateTime: string;
     }
 
 }
