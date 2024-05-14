@@ -3,6 +3,7 @@ import { Text, View } from '@/components/Themed';
 import { useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {logout} from "@/helpers/Database"
+import { stopSendingData } from '@/helpers/sendData';
 
 export default function SettingsScreen() {
   const [apiUrl, setApiUrl] = useState('')
@@ -39,7 +40,10 @@ export default function SettingsScreen() {
               onChangeText={(text:string) => storeData(text)}/>
               <Pressable 
           style={styles.buttonAlt} 
-          onPress={() => logout()}>
+          onPress={() => {
+            stopSendingData();
+            logout();
+            }}>
           <Text>Log out</Text>        
         </Pressable>
       </View>

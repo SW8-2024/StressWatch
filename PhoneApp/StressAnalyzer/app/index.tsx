@@ -19,11 +19,11 @@ export default function RedirectBasedOnLoginState() {
         .then((res : any) => {
           return typeof(res) == "string" && parseInt(res) > Date.now()
       })
-      ){        
+      ){
         refreshAuthorization();
         setLoggedIn(true);
       }
-      else if (networkState.isInternetReachable){        
+      else if (networkState.isInternetReachable){
         setLoggedIn(await refreshAuthorization());
       }else{        
         setLoggedIn(typeof(await getString("accessToken")) == "string");
