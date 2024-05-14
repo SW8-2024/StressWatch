@@ -1,4 +1,4 @@
-import { Button, FlatList, Pressable, StyleSheet } from 'react-native';
+import { Button, FlatList, Pressable, RefreshControl, SafeAreaView, ScrollView, StyleSheet } from 'react-native';
 import { Text, View } from '@/components/Themed';
 import { useEffect, useState } from 'react';
 import { Image } from "react-native";
@@ -20,6 +20,7 @@ export default function ApplicationsScreen() {
   const [appAnalysisData, setAppAnalysisData] = useState<AppAnalysisData[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [currentDate, setCurrentDate] = useState<Date>(new Date());
+  const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
     let cancel = false;
@@ -39,6 +40,7 @@ export default function ApplicationsScreen() {
       cancel = true;
     };
   }, [currentDate]);
+
   const renderAppsHeader = () => {
     return (
       <View style={styles.flatlistItemContainer}>
@@ -87,10 +89,13 @@ export default function ApplicationsScreen() {
   }
 
   return (
-    <TabContainer headerText='Apps' noScroll>
-      <Button title='refresh' onPress={() => setCurrentDate(new Date())} />
-      {renderAppAnalysisTable()}
-    </TabContainer>
+    <SafeAreaView>
+      <ScrollView
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={() => setCurrentDate(new Date())} />
+        }>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
