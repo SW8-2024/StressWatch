@@ -1,10 +1,9 @@
-import { Button, FlatList, Pressable, RefreshControl, SafeAreaView, ScrollView, StyleSheet } from 'react-native';
+import { FlatList, Pressable, RefreshControl, SafeAreaView, StyleSheet } from 'react-native';
 import { Text, View } from '@/components/Themed';
 import { useEffect, useState } from 'react';
 import { Image } from "react-native";
 import { Link } from 'expo-router';
 import Card from '@/components/Card';
-import { screenTimeData } from '@/constants/DummyData';
 import FontAwesome5 from '@expo/vector-icons/build/FontAwesome5';
 import TabContainer from '@/components/TabContainer';
 import { getAppAnalysis } from '@/helpers/Database';
