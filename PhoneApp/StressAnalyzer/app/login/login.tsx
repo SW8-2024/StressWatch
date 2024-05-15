@@ -17,13 +17,13 @@ export default function loginScreen () {
 
   async function tryLogin () {
     setAuthing(true);
-    let success = await login(email, password);    
+    let success = await login(email, password);
     setAuthing(false);
     if (!success){
-        setWrongCredentials(true);     
+        setWrongCredentials(true);
     }else{
         setWrongCredentials(false);
-        router.replace("/mainPage");
+        router.replace("../tabs/mainPage");
     }
   }
 
@@ -43,19 +43,19 @@ export default function loginScreen () {
           <View style={styles.inputBox}>
             <TextInput secureTextEntry={hidePassword} style={styles.inputField}
                       autoCapitalize='none'
-                      value={password}  
+                      value={password}
                       onChangeText={(password : any) => setPassword(password)}/>
             <MaterialCommunityIcons
-                      name={hidePassword ? 'eye' : 'eye-off'}                   
+                      name={hidePassword ? 'eye' : 'eye-off'}
                       style={styles.eye}
                       size={24}
                       onPress={toggleHidePassword}/>
           </View>
-        </View>    
+        </View>
         {wrongCredentials && <Text style={styles.error}> Wrong credentials</Text>}
         <View style={styles.separator}/>
-        <Pressable 
-          style={styles.button} 
+        <Pressable
+          style={styles.button}
           onPress={()=>{
             if (!authing){
               tryLogin();
@@ -65,7 +65,7 @@ export default function loginScreen () {
         </Pressable>
         <Pressable
           style={styles.buttonAlt}
-          onPress={() => router.navigate('/createAccount')}>
+          onPress={() => router.navigate('/login/createAccount')}>
           <Text style={styles.buttonText}>Create new account</Text>
         </Pressable>
     </View>

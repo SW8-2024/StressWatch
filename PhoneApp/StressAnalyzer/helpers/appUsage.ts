@@ -86,7 +86,7 @@ const _getEventData = async (startTime : number, endTime : number) => {
             }
             sessions.push({from : new Date(val), to : new Date(end)});
         }
-        transformedData.push({from: new Date(startTime), to : new Date(Math.min(endTime, Date.now())), sessions: sessions, appName : elem.packageName });
+        transformedData.push({ sessions: sessions, appName : elem.packageName });
     })
     return transformedData
 }

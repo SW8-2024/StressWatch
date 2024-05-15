@@ -12,7 +12,7 @@ export const storeObject = async (key : string, value : object ) => {
     try {
       const jsonValue = JSON.stringify(value);
       await AsyncStorage.setItem(key, jsonValue);
-    } catch (e) {        
+    } catch (e) {
       // saving error
     }
 };
@@ -32,7 +32,7 @@ export const getMyObject = async (key : string) => {
       return jsonValue != null ? JSON.parse(jsonValue) : null
     } catch(e) {
       // read error
-    }    
+    }
 };
 
 export const clearStorage = async () =>{

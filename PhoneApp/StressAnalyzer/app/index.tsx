@@ -3,6 +3,7 @@ import { useCallback, useEffect, useState } from 'react';
 import {getString} from "@/helpers/AsyncStorage";
 import {refreshAuthorization} from "@/helpers/Database";
 import * as Network from 'expo-network';
+import { sendData } from '@/helpers/sendData';
 
 
 export default function RedirectBasedOnLoginState() {
@@ -19,16 +20,19 @@ export default function RedirectBasedOnLoginState() {
         .then((res : any) => {
           return typeof(res) == "string" && parseInt(res) > Date.now()
       })
-      ){        
+      ){
         refreshAuthorization();
         setLoggedIn(true);
       }
-      else if (networkState.isInternetReachable){        
+      else if (networkState.isInternetReachable){
         setLoggedIn(await refreshAuthorization());
       }else{        
         setLoggedIn(typeof(await getString("accessToken")) == "string");
       }
       setAppIsReady(true);
+    }
+    if(loggedIn){
+      sendData();
     }
     prepare();
   }, []);
@@ -45,11 +49,10 @@ export default function RedirectBasedOnLoginState() {
   }, [appIsReady]);
   
   if (!appIsReady) {
-    return null;
+    return null
   }else if (loggedIn){
-    return <Redirect href='/mainPage'/>
+    return <Redirect href='/tabs/mainPage'/>
   }else{
-    return <Redirect href='/login'/>
+    return <Redirect href='/login/login'/>
   }
-   
 }

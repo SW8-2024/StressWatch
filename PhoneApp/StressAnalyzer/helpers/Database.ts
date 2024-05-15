@@ -8,7 +8,7 @@ const serverLocation = 'https://chillchaser.ovh/';
 async function fetchWithAuth(url: string, options?: RequestInit | undefined): Promise<Response> {
   let [authorized, accessToken] = await checkIfAuthorized();
   if (!authorized) {
-    console.log("Not authorized to sendUsageData")
+    console.log("Not authorized to fetch with auth")
     await refreshAuthorization();
   }
 
@@ -61,7 +61,8 @@ export async function getStressMetrics(date: Date): Promise<StressMetrics> {
 }
 
 export async function sendUsageData(data: EventUsageTransformedData[]) {
-  const url: string = serverLocation + "api/DataAnalysis/app-usage";
+  console.log("Getting usage data")
+  const url: string = serverLocation + "api/DataCollection/app-usage";
   let response: Response = await fetchWithAuth(url, {
     method: 'POST',
     headers: {
@@ -203,7 +204,6 @@ export async function refreshAuthorization(): Promise<boolean> {
     await storeString("accessToken", resp.accessToken);
     await storeString("refreshToken", resp.refreshToken);
     await storeString("authorizedUntil", (Date.now() + resp.expiresIn * 1000).toString());
-    
     return true;
   } catch (e) {
     console.log("Error: " + e);
@@ -213,5 +213,5 @@ export async function refreshAuthorization(): Promise<boolean> {
 
 export async function logout() {
   await clearStorage();
-  router.replace("/login");
+  router.replace("/login/login");
 }
