@@ -75,7 +75,7 @@ export async function sendUsageData(data: EventUsageTransformedData[]) {
 }
 
 export async function receiveUsageData() {
-  const url: string = serverLocation + "api/DataAnalysis/app-usage";
+  const url: string = serverLocation + "api/DataCollection/app-usage";
   let response = await fetchWithAuth(url, {
     method: 'GET',
     headers: {
