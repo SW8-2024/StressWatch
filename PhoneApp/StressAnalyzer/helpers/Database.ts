@@ -87,6 +87,7 @@ export async function receiveUsageData() {
     throw new Error("Got status " + response.status + " while trying to get usage data");
   }
 }
+
 export async function register(email: string, password: string): Promise<any> {
   let url = serverLocation + "register";
   let ret: any = new Response();
@@ -149,6 +150,26 @@ export async function login(email: string, password: string) {
     return false;
   }
   return ret;
+}
+
+export async function authorize(token: string): Promise<string> {
+  const url: string = serverLocation + "api/Watch/authorize";
+  let response: Response = await fetchWithAuth(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'accept': '*/*'
+    },
+    body: JSON.stringify({
+      "token": token
+    }),
+  })
+  
+  if (response.status == 200){
+    return `${response.status} Authorized`;
+  } else {
+    return `${response.status} ${((await response.text()).replaceAll('"', ' '))}`;
+  }
 }
 
 export async function refreshAuthorization(): Promise<boolean> {
