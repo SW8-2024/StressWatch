@@ -8,6 +8,12 @@ import android.app.AppOpsManager
 import android.content.pm.PackageManager
 import android.content.Context
 import android.app.usage.UsageEvents
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.drawable.Drawable
+import android.graphics.drawable.BitmapDrawable
+import java.io.ByteArrayOutputStream
+import android.util.Base64
 
 import java.time.ZonedDateTime
 import java.time.LocalDate
@@ -45,7 +51,6 @@ class AppUsageModule : Module() {
           }
         }
       }
-
       val ret = mapOf(
           "success" to hasPermission,
           "data" to retStats,
@@ -56,6 +61,17 @@ class AppUsageModule : Module() {
       return@Function ret
     }
 
+    Function("getAppIcon") {packageName : String ->
+      val packageManager = context.getPackageManager();
+      try{
+        val drawableIcon = packageManager.getApplicationIcon(packageName);
+        val bitmapIcon =  drawableToBitmap(drawableIcon);
+        val base64Icon = convertToBase64(bitmapIcon);      
+        return@Function base64Icon;
+      }catch(e : Exception){
+        return@Function "";
+      }    
+    }
     /**
    * Returns the relevant events in the given time interval
    */
@@ -71,10 +87,8 @@ class AppUsageModule : Module() {
       if (end > now){ 
         end = now
       }
-
       // This will keep a map of all of the events per package name 
       val sortedEvents = mutableMapOf<String, MutableList<UsageEvents.Event>>()
-
       // Query the list of events that has happened within that time frame
       val usageStatsManager = context.getSystemService(Context.USAGE_STATS_SERVICE) as UsageStatsManager
       val systemEvents = usageStatsManager.queryEvents(start, end)
@@ -87,10 +101,8 @@ class AppUsageModule : Module() {
           packageEvents.add(event)
           sortedEvents[event.packageName] = packageEvents
       }
-
       // This will keep a list of our final stats
       val stats = mutableListOf<Any>()
-
       // Go through the events by package name
       sortedEvents.forEach { packageName, events ->
         // Keep track of the current start and end times
@@ -120,7 +132,6 @@ class AppUsageModule : Module() {
               startTimes.add(startTime)
             }
         }
-      
         val elem =
         stats.add(mapOf(          
           "packageName" to packageName,
@@ -141,6 +152,25 @@ class AppUsageModule : Module() {
   private val context
       get() = requireNotNull(appContext.reactContext)
   
+  private fun drawableToBitmap(drawable : Drawable) : Bitmap {
+    var bitmap : Bitmap;
+    if (drawable is BitmapDrawable) {
+        val bitmapDrawable = drawable;
+        if(bitmapDrawable.getBitmap() != null) {
+            return bitmapDrawable.getBitmap();
+        }
+    }
+    if(drawable.getIntrinsicWidth() <= 0 || drawable.getIntrinsicHeight() <= 0) {
+        bitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888); // Single color bitmap will be created of 1x1 pixel
+    } else {
+        bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+    }
+    var canvas = Canvas(bitmap);
+    drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+    drawable.draw(canvas);
+    return bitmap;
+  }
+  
   //Checks whether we have usagestats permission
   private fun hasUsageStatsPermission() : Boolean{    
     var granted = false
@@ -154,5 +184,12 @@ class AppUsageModule : Module() {
         granted = (mode == AppOpsManager.MODE_ALLOWED)
     }
     return granted
-  }   
+  }
+
+  private fun convertToBase64(bm: Bitmap): String? {
+        val baos = ByteArrayOutputStream()
+        bm.compress(Bitmap.CompressFormat.JPEG, 100, baos)
+        val b = baos.toByteArray()
+        return Base64.encodeToString(b, Base64.DEFAULT)
+    }
 }
