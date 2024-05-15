@@ -15,8 +15,6 @@ declare global {
     }
 
     interface EventUsageTransformedData {
-        from: DateTime;
-        to: DateTime;
         sessions: Session[],
         appName: string,
     }

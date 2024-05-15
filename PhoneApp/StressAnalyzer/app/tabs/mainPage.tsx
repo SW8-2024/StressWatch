@@ -6,6 +6,7 @@ import Stressometer from '@/components/Stressometer';
 import TabContainer from '@/components/TabContainer';
 import { getStressMetrics } from '@/helpers/Database';
 import ErrorWithRetry from '@/components/ErrorWithRetry';
+import { sendData } from '@/helpers/sendData'
 
 export default function HomeScreen() {
   const [stressMetrics, setStressMetrics] = useState<StressMetrics | null>(null);
@@ -13,6 +14,7 @@ export default function HomeScreen() {
   const [currentDate, setCurrentDate] = useState<Date>(new Date())
 
   useEffect(() => {
+    sendData();
     let cancel = false;
     (async () => {
       try {

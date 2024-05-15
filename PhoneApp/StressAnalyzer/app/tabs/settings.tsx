@@ -1,5 +1,6 @@
 import { StyleSheet, TextInput } from 'react-native';
 import { Text, View } from '@/components/Themed';
+import { stopSendingData } from '@/helpers/sendData';
 import { useState, useCallback } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
 import { logout, authorize } from "@/helpers/Database"
@@ -52,7 +53,12 @@ export default function SettingsScreen() {
           text='Log out'
           textColor='white'
           bgColor='red'
-          action={logout}/>
+          action={() =>
+            {
+            stopSendingData();
+            logout()}
+          }
+        />
       </View>
     </View>
   );

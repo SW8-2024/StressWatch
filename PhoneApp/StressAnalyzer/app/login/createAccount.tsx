@@ -68,7 +68,7 @@ export default function CreateAccountScreen() {
             if (success.status == 200) {
                 let success = await login(email, password);
                 if (success) {
-                    router.replace("/mainPage");
+                    router.replace("../tabs/mainPage");
                 } else {
                     setError("Account created but could not log in");
                 }
