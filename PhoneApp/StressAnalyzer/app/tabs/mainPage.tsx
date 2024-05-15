@@ -1,12 +1,6 @@
-import { ActivityIndicator, Button, FlatList, Pressable, StyleSheet, useColorScheme } from 'react-native';
+import { ActivityIndicator, Button, StyleSheet } from 'react-native';
 import { Text, View } from '@/components/Themed';
-import { BarChart, barDataItem } from "react-native-gifted-charts";
-import { Image } from "react-native";
-import { Link } from 'expo-router';
-import { Suspense, useEffect, useState } from 'react';
-import { FontAwesome5 } from '@expo/vector-icons';
-import Colors from '@/constants/Colors';
-import { notificationData, screenTimeData } from '@/constants/DummyData';
+import { useEffect, useState } from 'react';
 import Card from '@/components/Card';
 import Stressometer from '@/components/Stressometer';
 import TabContainer from '@/components/TabContainer';

@@ -23,7 +23,7 @@ type loginResponse = {
 } | any;
 
 export const server = setupServer(
-  http.post<PathParams, registerRequestBody, JsonBodyType, string>(serverLocation +  'register', async ({ request }) => {    
+  http.post<PathParams, registerRequestBody, JsonBodyType, string>(serverLocation +  'register', async ({ request }) => {
     const body = await request.json();
     const email = body.email;
     const pass = body.password;
@@ -48,10 +48,10 @@ export const server = setupServer(
       );
     }
   }),
-  http.post<PathParams, registerRequestBody, loginResponse, string>(serverLocation + 'login', async ({ request }) => {    
+  http.post<PathParams, registerRequestBody, loginResponse, string>(serverLocation + 'login', async ({ request }) => {
     const body = await request.json();
     const pass = userDatabase.get(body.email);
-    if (pass != undefined && pass == body.password){      
+    if (pass != undefined && pass == body.password){
       return HttpResponse.json(
         {
           "tokenType": "Bearer",
@@ -62,9 +62,9 @@ export const server = setupServer(
       )
     }else{
       return new HttpResponse("unauthorized",{
-        status: 401,               
+        status: 401,
       });
-    }   
+    }
   }),
   http.post<PathParams, refreshBody, loginResponse, string>(serverLocation + 'refresh', async ({ request }) => {
     const body = await request.json();
