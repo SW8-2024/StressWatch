@@ -21,7 +21,7 @@ export const stopSendingData : any = () => {
 const sendDataInIntervals : any = () => {
     interval = setInterval(async () => {
         sendDataFun();
-    }, TIME.MINUTE * 30);
+    }, TIME.MINUTE * 2);
 }
 
 const sendDataFun : any = async () => {
