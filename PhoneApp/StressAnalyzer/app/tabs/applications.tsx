@@ -1,10 +1,9 @@
-import { Button, FlatList, Pressable, StyleSheet } from 'react-native';
+import { FlatList, Pressable, RefreshControl, SafeAreaView, StyleSheet } from 'react-native';
 import { Text, View } from '@/components/Themed';
 import { useEffect, useState } from 'react';
 import { Image } from "react-native";
 import { Link } from 'expo-router';
 import Card from '@/components/Card';
-import { screenTimeData } from '@/constants/DummyData';
 import FontAwesome5 from '@expo/vector-icons/build/FontAwesome5';
 import TabContainer from '@/components/TabContainer';
 import { getAppAnalysis } from '@/helpers/Database';
@@ -20,9 +19,11 @@ export default function ApplicationsScreen() {
   const [appAnalysisData, setAppAnalysisData] = useState<AppAnalysisData[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [currentDate, setCurrentDate] = useState<Date>(new Date());
+  const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
     let cancel = false;
+    setRefreshing(true);
     (async () => {
       try {
         let appAnalysis = await getAppAnalysis();
@@ -31,6 +32,10 @@ export default function ApplicationsScreen() {
         }
       } catch (e) {
         setError((e ?? "unknown error").toString());
+      } finally {
+        if (!cancel) {
+          setRefreshing(false);
+        }
       }
     })();
     return () => {
@@ -39,6 +44,7 @@ export default function ApplicationsScreen() {
       cancel = true;
     };
   }, [currentDate]);
+
   const renderAppsHeader = () => {
     return (
       <View style={styles.flatlistItemContainer}>
@@ -87,10 +93,20 @@ export default function ApplicationsScreen() {
   }
 
   return (
-    <TabContainer headerText='Apps' noScroll>
-      <Button title='refresh' onPress={() => setCurrentDate(new Date())} />
-      {renderAppAnalysisTable()}
-    </TabContainer>
+    <SafeAreaView>
+      <FlatList
+        data={['Apps']}
+        renderItem={({ item }) => (
+          <TabContainer headerText={item} noScroll>
+            {renderAppAnalysisTable()}
+          </TabContainer>
+        )}
+        keyExtractor={(item) => item}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={() => setCurrentDate(new Date())} />
+        }
+      />
+    </SafeAreaView>
   );
 }
 

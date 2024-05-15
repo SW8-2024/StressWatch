@@ -1,4 +1,4 @@
-import { ActivityIndicator, Button, StyleSheet } from 'react-native';
+import { ActivityIndicator, RefreshControl, SafeAreaView, ScrollView, StyleSheet } from 'react-native';
 import { Text, View } from '@/components/Themed';
 import { useEffect, useState } from 'react';
 import Card from '@/components/Card';
@@ -12,10 +12,12 @@ export default function HomeScreen() {
   const [stressMetrics, setStressMetrics] = useState<StressMetrics | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [currentDate, setCurrentDate] = useState<Date>(new Date())
+  const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
     sendData();
     let cancel = false;
+    setRefreshing(true);
     (async () => {
       try {
         let stressMetrics = await getStressMetrics(currentDate);
@@ -24,6 +26,10 @@ export default function HomeScreen() {
         }
       } catch (e) {
         setError((e ?? "unknown error").toString());
+      } finally {
+          if (!cancel) {
+            setRefreshing(false);
+          }
       }
     })();
     return () => {
@@ -56,13 +62,20 @@ export default function HomeScreen() {
     </>);
   }
 
+
   return (
-    <TabContainer headerText='Home'>
-      <Button title='refresh' onPress={() => setCurrentDate(new Date())} />
-      <Card cardTitle="Today's Stress">
-        <TodayStressCard />
-      </Card>
-    </TabContainer>
+    <SafeAreaView>
+      <ScrollView
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={() => setCurrentDate(new Date())} />
+        }>
+        <TabContainer headerText='Home'>
+          <Card cardTitle="Today's Stress">
+            <TodayStressCard />
+          </Card>
+        </TabContainer>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 

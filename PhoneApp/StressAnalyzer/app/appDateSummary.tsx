@@ -1,9 +1,10 @@
-import { StyleSheet, TouchableOpacity, Image } from 'react-native';
+import { StyleSheet, TouchableOpacity, Image, Button, SafeAreaView, ScrollView, RefreshControl } from 'react-native';
 import { Text, View } from "@/components/Themed";
 import { useLocalSearchParams, useNavigation } from "expo-router";
 import { BarChart, barDataItem } from "react-native-gifted-charts";
 import Card from '@/components/Card';
 import { FontAwesome5 } from '@expo/vector-icons';
+import { useEffect, useState } from 'react';
 
 const dataToColoredData = (data:barDataItem[]) : barDataItem[] => {
   var coloredData:barDataItem[] = data
@@ -55,51 +56,78 @@ export default function AppDateSummaryScreen(){
   const params = useLocalSearchParams<{ date: string, image: string, name: string }>();
   const navigation = useNavigation();
   const date = new Date(parseInt(params.date))
+  const [error, setError] = useState<string | null>(null);
+  const [currentDate, setCurrentDate] = useState<Date>(new Date());
+  const [refreshing, setRefreshing] = useState(false);
+
+  useEffect(() => {
+    let cancel = false;
+    setRefreshing(true);
+    (async () => {
+      try {
+        // implement when data received from database
+      } catch (e) {
+        setError((e ?? "unknown error").toString());
+      } finally {
+        if (!cancel) {
+          setRefreshing(false);
+        }
+      }
+    })();
+    return () => {
+      setError(null);
+      cancel = true;
+    };
+  }, [currentDate]);
 
   return(
-    <View style={styles.container}>
-      <View style={styles.appHeaderContainer}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <FontAwesome5
+    <ScrollView refreshControl={
+      <RefreshControl refreshing={refreshing} onRefresh={() => setCurrentDate(new Date())} />
+    }>
+      <View style={styles.container}>
+        <View style={styles.appHeaderContainer}>
+          <TouchableOpacity onPress={() => navigation.goBack()}>
+            <FontAwesome5
               name="arrow-left"
               size={24}
               color={'white'}
-              />
-        </TouchableOpacity>
-        <View style={styles.appContainer}>
-          <Image source={Number(params.image)} style={styles.appImage} />
-          <Text style={styles.appName}>{params.name}</Text>
-        </View>
-        <View/>
-      </View>
-      <View style={{flex: 3}}>
-      <Card>
-        <View style={styles.containerLabelsContainer}><Text style={styles.containerLabelsText}>{date.getUTCDate()}/{date.getMonth()+1}/{date.getFullYear()}</Text></View>
-            <BarChart 
-            data={coloredAppData}
-            cappedBars
-            capColor={'white'}
-            capThickness={0}
-            barWidth={6}
-            roundedBottom={false}
-            yAxisColor={'white'}
-            yAxisTextStyle={{color: 'white'}}
-            xAxisColor={'white'}
-            xAxisLabelTextStyle={{color: 'white', marginLeft: -15}}
-            isAnimated
-            noOfSections={4}
-            spacing={0}
-            onPress = {(item:barDataItem,index:number)=>console.log('item',item)}
-            yAxisLabelWidth={30}
-            xAxisThickness={1}
-            labelWidth={15}
-            labelsExtraHeight={5}
-            initialSpacing={15}
-            endSpacing={20}
             />
-      </Card>
-    </View>
-    </View>
+          </TouchableOpacity>
+          <View style={styles.appContainer}>
+            <Image source={Number(params.image)} style={styles.appImage} />
+            <Text style={styles.appName}>{params.name}</Text>
+          </View>
+          <View />
+        </View>
+        <View style={{ flex: 3 }}>
+          <Card>
+            <View style={styles.containerLabelsContainer}><Text style={styles.containerLabelsText}>{date.getUTCDate()}/{date.getMonth() + 1}/{date.getFullYear()}</Text></View>
+            <BarChart
+              data={coloredAppData}
+              cappedBars
+              capColor={'white'}
+              capThickness={0}
+              barWidth={6}
+              roundedBottom={false}
+              yAxisColor={'white'}
+              yAxisTextStyle={{ color: 'white' }}
+              xAxisColor={'white'}
+              xAxisLabelTextStyle={{ color: 'white', marginLeft: -15 }}
+              isAnimated
+              noOfSections={4}
+              spacing={0}
+              onPress={(item: barDataItem, index: number) => console.log('item', item)}
+              yAxisLabelWidth={30}
+              xAxisThickness={1}
+              labelWidth={15}
+              labelsExtraHeight={5}
+              initialSpacing={15}
+              endSpacing={20}
+            />
+          </Card>
+        </View>
+      </View>
+    </ScrollView>
   );
 }
 
