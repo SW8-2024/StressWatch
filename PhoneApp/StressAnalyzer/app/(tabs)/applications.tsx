@@ -24,6 +24,7 @@ export default function ApplicationsScreen() {
 
   useEffect(() => {
     let cancel = false;
+    setRefreshing(true);
     (async () => {
       try {
         let appAnalysis = await getAppAnalysis();
@@ -32,6 +33,10 @@ export default function ApplicationsScreen() {
         }
       } catch (e) {
         setError((e ?? "unknown error").toString());
+      } finally {
+        if (!cancel) {
+          setRefreshing(false);
+        }
       }
     })();
     return () => {
@@ -90,11 +95,18 @@ export default function ApplicationsScreen() {
 
   return (
     <SafeAreaView>
-      <ScrollView
+      <FlatList
+        data={['Apps']}
+        renderItem={({ item }) => (
+          <TabContainer headerText={item} noScroll>
+            {renderAppAnalysisTable()}
+          </TabContainer>
+        )}
+        keyExtractor={(item) => item}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={() => setCurrentDate(new Date())} />
-        }>
-      </ScrollView>
+        }
+      />
     </SafeAreaView>
   );
 }

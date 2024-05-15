@@ -1,7 +1,9 @@
-import { FlatList, StyleSheet, Image, TouchableOpacity, Pressable } from 'react-native';
+import { FlatList, StyleSheet, Image, TouchableOpacity, Pressable, RefreshControl } from 'react-native';
 import { Text, View } from '@/components/Themed';
 import { useLocalSearchParams, useNavigation, Link } from 'expo-router';
 import FontAwesome5 from '@expo/vector-icons/build/FontAwesome5';
+import { useEffect, useState } from 'react';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const getDaysInMonth = (year : number, month : number) => new Date(year, month, 0).getDate()
 
@@ -9,6 +11,9 @@ export default function ScreenTimeScreen() {
   const params = useLocalSearchParams<{ date: string, image: string, name: string }>();
   const navigation = useNavigation();
   const date = new Date(parseInt(params.date))
+  const [error, setError] = useState<string | null>(null);
+  const [currentDate, setCurrentDate] = useState<Date>(new Date());
+  const [refreshing, setRefreshing] = useState(false);
   
   const formatMinutes = (minutes: number) => {
     const hours = Math.floor(minutes / 60);
@@ -23,6 +28,26 @@ export default function ScreenTimeScreen() {
       "usage": formatMinutes(Math.floor(Math.random()*100))
     }
   })
+
+  useEffect(() => {
+    let cancel = false;
+    setRefreshing(true);
+    (async () => {
+      try {
+        // implement when data received from database
+      } catch (e) {
+        setError((e ?? "unknown error").toString());
+      } finally {
+        if (!cancel) {
+          setRefreshing(false);
+        }
+      }
+    })();
+    return () => {
+      setError(null);
+      cancel = true;
+    };
+  }, [currentDate]);
 
   const renderScreenTimeItem = ({item, index}: { item: any, index: number}) => {  
     return (
@@ -52,6 +77,7 @@ export default function ScreenTimeScreen() {
     )
   }
 
+
   return (
     <View style={styles.container}>
       <View style={styles.appHeaderContainer}>
@@ -70,7 +96,10 @@ export default function ScreenTimeScreen() {
       </View>
       <FlatList
         data={screenTimeData}
-        renderItem={renderScreenTimeItem}/>
+        renderItem={renderScreenTimeItem}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={() => setCurrentDate(new Date())} />
+        }/>
     </View>
   );
 }
