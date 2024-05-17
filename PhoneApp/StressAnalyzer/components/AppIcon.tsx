@@ -1,5 +1,5 @@
 import { getAppIconFromName } from '@/helpers/appUsage';
-import { StyleSheet, Image, View} from 'react-native';
+import { StyleSheet, Image, View, Text} from 'react-native';
 
 export const AppIcon = function AppIcon({ packageName } : {packageName : string}){
     const icon = getAppIconFromName(packageName);
@@ -13,12 +13,13 @@ export const AppIcon = function AppIcon({ packageName } : {packageName : string}
 
 const styles = StyleSheet.create({
     icon: {
-        width: 40,
-        height: 40,
+        width: 30,
+        height: 30,
+        backgroundColor: 'transparent'
     },
     backupIcon: {
-        width: 40,
-        height: 40,
+        width: 30,
+        height: 30,
         backgroundColor: 'white',
     }
 });

@@ -1,40 +1,47 @@
-import { FlatList, StyleSheet, Image, TouchableOpacity, Pressable, RefreshControl } from 'react-native';
+import { FlatList, StyleSheet, Image, TouchableOpacity, Pressable, RefreshControl, ScrollView } from 'react-native';
 import { Text, View } from '@/components/Themed';
-import { useLocalSearchParams, useNavigation, Link } from 'expo-router';
+import { useLocalSearchParams, useNavigation, Link, router } from 'expo-router';
 import FontAwesome5 from '@expo/vector-icons/build/FontAwesome5';
 import { useEffect, useState } from 'react';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { AppIcon } from '@/components/AppIcon';
+import { getAppAnalysisPerDayByApp } from '@/helpers/Database';
+import { mapAppAnalysisPerDate } from '@/helpers/mappers';
+import Card from '@/components/Card';
+import { getNameFromName } from '@/helpers/appUsage';
 
-const getDaysInMonth = (year : number, month : number) => new Date(year, month, 0).getDate()
 
 export default function ScreenTimeScreen() {
-  const params = useLocalSearchParams<{ date: string, image: string, name: string }>();
-  const navigation = useNavigation();
-  const date = new Date(parseInt(params.date))
+  const params = useLocalSearchParams<{ date: string, name: string }>();
+  const name = params?.name ?? "";
+  const date = new Date(Number(params?.date ?? Date.now()));
   const [error, setError] = useState<string | null>(null);
-  const [currentDate, setCurrentDate] = useState<Date>(new Date());
+  const [currentDate, setCurrentDate] = useState<Date>(date);
   const [refreshing, setRefreshing] = useState(false);
-  
-  const formatMinutes = (minutes: number) => {
-    const hours = Math.floor(minutes / 60);
-    const remainingMinutes = minutes % 60;
-    return `${hours.toString().padStart(2, '0')}:${remainingMinutes.toString().padStart(2, '0')}`;
-  };
+  const [screenTimeData, setScreenTimeData] = useState<AppAnalysisByDateData[] | null>(null);
 
-  const screenTimeData = Array.from({length: getDaysInMonth(date.getFullYear(), date.getMonth()+1)}, () => {
-    return {
-      "dailyAverage": Math.floor(Math.random() * 80),
-      "appAverage": Math.floor(Math.random() * 80),
-      "usage": formatMinutes(Math.floor(Math.random()*100))
+  const formatTime = (hours: number, minutes: number, seconds: number) => {
+    return hours + "h " + minutes + "m";
+  }
+  const formatDate = (d: Date) => {
+    if (date.getFullYear() == d.getFullYear()){
+      return d.getDate() + "/" + (d.getMonth() + 1);
+    }else{
+      return d.toLocaleDateString();
     }
-  })
+  }
 
   useEffect(() => {
+    console.log(params);
     let cancel = false;
     setRefreshing(true);
     (async () => {
       try {
-        // implement when data received from database
+        let endOfCurrentDate = currentDate;
+        endOfCurrentDate.setHours(23,59,59,999);
+        let appAnalysis = await getAppAnalysisPerDayByApp(endOfCurrentDate, name);
+        if (!cancel) {
+          setScreenTimeData(appAnalysis.appUsageForAppAndDays.map(mapAppAnalysisPerDate));
+        }
       } catch (e) {
         setError((e ?? "unknown error").toString());
       } finally {
@@ -45,116 +52,97 @@ export default function ScreenTimeScreen() {
     })();
     return () => {
       setError(null);
+      setScreenTimeData(null);
       cancel = true;
     };
   }, [currentDate]);
 
-  const renderScreenTimeItem = ({item, index}: { item: any, index: number}) => {  
+  const renderAppsHeader = () => {
     return (
-      <Link href={{pathname: "/appDateSummary", params: { date: params.date, image: params.image, name: params.name }}} asChild>
-        <Pressable>
-          <View style={styles.flatlistItemContainer}>
-            <View style={styles.flatlistItemDate}>
-              <Text style={styles.statsText}>Date</Text>
-              <Text>{screenTimeData.length - index}/{date.getMonth()+1}/{date.getFullYear()}</Text>
-            </View>
-            <View style={{ flex: 1, backgroundColor: 'transparent'}}></View>
-            <View style={styles.flatlistItemDailyAverage}>
-              <Text style={styles.statsText}>Daily Avg.</Text>
-              <Text>{item.dailyAverage}</Text>
-            </View>
-            <View style={styles.flatlistItemAppAverage}>
-              <Text style={styles.statsText}>App Avg.</Text>
-              <Text>{item.appAverage}</Text>
-            </View>
-            <View style={styles.flatlistItemUsage}>
-              <Text style={styles.statsText}>Usage</Text>
-              <Text>{item.usage}</Text>
-            </View>
-          </View>
-        </Pressable>
-      </Link>
+      <View style={styles.flatlistItemContainer}>
+        <View style={{...styles.flatlistHeaderTextContainer, flex: 3 }}><Text style={{ fontWeight: 'bold' }}>Date</Text></View>
+        <View style={{...styles.flatlistHeaderTextContainer, flex: 2 }}><Text style={{ fontWeight: 'bold' }}>App avg.</Text></View>
+        <View style={{...styles.flatlistHeaderTextContainer, flex: 2 }}><Text style={{ fontWeight: 'bold' }}>Ref. stress</Text></View>
+        <View style={{...styles.flatlistHeaderTextContainer, flex: 2 }}><Text style={{ fontWeight: 'bold' }}>Usage</Text></View>
+        <View style={{...styles.flatlistHeaderTextContainer, flex: 1 }}></View>
+      </View>
     )
   }
 
+  const renderScreenTimeItem = ({item, index}: { item: AppAnalysisByDateData, index: number}) => {
+    return (
+      <Pressable onPress={() => {router.navigate({pathname: "/appDateSummary", params: { date: item.date.valueOf(), name: params.name }})}}>
+        <View style={styles.flatlistItemContainer}>
+          <View style={styles.flatlistItemDate}>
+            <Text>{formatDate(item.date)}</Text>
+          </View>
+          <View style={styles.flatlistItemAppAverage}>
+            <Text>{Math.round(item.averageStress)}</Text>
+          </View>
+          <View style={styles.flatlistItemDailyAverage}>
+            <Text>{Math.round(item.referenceStress)}</Text>
+          </View>
+          <View style={styles.flatlistItemUsage}>
+            <Text>{formatTime(item.usageHours, item.usageMinutes, item.usageSeconds)}</Text>
+          </View>
+          <View style={{...styles.flatlistItemTextContainer, flex:1}}>
+            <FontAwesome5
+              name="arrow-right"
+              size={18}
+              color={'white'}
+            />
+          </View>
+        </View>
+      </Pressable>
+    )
+  }
+
+function renderAppAnalysisTable() {
+  return <Card noPadding>
+    <FlatList
+      data={screenTimeData}
+      renderItem={renderScreenTimeItem}
+      ListHeaderComponent={renderAppsHeader}
+      ListHeaderComponentStyle={styles.flatlistHeaderTextContainer}
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={() => setCurrentDate(new Date())} />
+      }
+      stickyHeaderIndices={[0]}/>
+    </Card>;
+}
 
   return (
-    <View style={styles.container}>
-      <View style={styles.appHeaderContainer}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <FontAwesome5
-              name="arrow-left"
-              size={24}
-              color={'white'}
-              />
-        </TouchableOpacity>
-        <View style={styles.appContainer}>
-          <Image source={Number(params.image)} style={styles.appImage} />
-          <Text style={styles.appName}>{params.name}</Text>
+    <View style={{flex:1}}>
+      <View style={styles.mainHeader}>
+        <AppIcon packageName={name}/>
+        <Text style={styles.headerStyle}> {getNameFromName(name)} </Text>
         </View>
-        <View/>
-      </View>
-      <FlatList
-        data={screenTimeData}
-        renderItem={renderScreenTimeItem}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={() => setCurrentDate(new Date())} />
-        }/>
-    </View>
-  );
+      {renderAppAnalysisTable()}
+    </View>);
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  monthContainer: {
-    flexDirection: 'row',
+  mainHeader: {
     alignItems: 'center',
-    justifyContent: 'space-between',
-    marginVertical: 12,
-  },
-  monthText: {
-    fontSize: 24,
-    fontWeight: 'bold',
-  },
-  appHeaderContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 12,
-    marginHorizontal: 12,
-  },
-  appContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginRight: 24,
-  },
-  appImage: {
-    width: 64,
-    height: 64,
-  },
-  appName: {
-    marginLeft: 12,
-    fontSize: 24,
+    justifyContent: 'center',
+    flexDirection: 'row'
   },
   flatlistItemContainer: {
     flexDirection: 'row',
     flex: 1,
-    backgroundColor: '#555555',
-    borderRadius: 20,
+    backgroundColor: 'transparent',
     margin: 4,
-    padding: 4,
+    paddingTop: 5,
+    paddingBottom: 5,
   },
   flatlistItemDate: {
-    flex: 2,
+    flex: 3,
     backgroundColor: 'transparent',
     alignItems: 'center',
     justifyContent: 'center',
     margin: 4,
   },
-  flatlistItemDailyAverage: { 
+  flatlistItemDailyAverage: {
     flex: 2,
     backgroundColor: 'transparent',
     alignItems: 'center',
@@ -173,7 +161,24 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  statsText: {
-    fontSize: 16,
+  flatlistHeaderTextContainer: {
+    backgroundColor: '#3B3B3B',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingTop: 3,
+    paddingBottom: 3,
   },
+  flatlistItemTextContainer: {
+    flex: 3,
+    backgroundColor: 'transparent',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  headerStyle: {
+    color: "white",
+    fontSize: 30,
+    alignSelf: "center",
+    padding: 20,
+    textAlign: "center"
+}
 });

@@ -2,7 +2,7 @@ import { FlatList, Pressable, RefreshControl, SafeAreaView, StyleSheet } from 'r
 import { Text, View } from '@/components/Themed';
 import { useEffect, useState } from 'react';
 import { Image } from "react-native";
-import { Link } from 'expo-router';
+import { Link, router } from 'expo-router';
 import Card from '@/components/Card';
 import FontAwesome5 from '@expo/vector-icons/build/FontAwesome5';
 import TabContainer from '@/components/TabContainer';
@@ -10,9 +10,9 @@ import { getAppAnalysis } from '@/helpers/Database';
 import ErrorWithRetry from '@/components/ErrorWithRetry';
 import AnalysisLoading from '@/components/AnalysisLoading';
 import { mapAppAnalysisData } from '@/helpers/mappers';
+import { AppIcon } from '@/components/AppIcon';
+import { getNameFromName } from '@/helpers/appUsage';
 
-
-const tinderImage = require("@/assets/images/TinderImage.png");
 
 export default function ApplicationsScreen() {
 
@@ -44,27 +44,25 @@ export default function ApplicationsScreen() {
       cancel = true;
     };
   }, [currentDate]);
-
   const renderAppsHeader = () => {
     return (
       <View style={styles.flatlistItemContainer}>
         <View style={{ flex: 1, backgroundColor: 'transparent' }}></View>
         <View style={{ flex: 4, backgroundColor: 'transparent' }}></View>
-        <View style={styles.flatlistHeaderTextContainer}><Text style={{ fontWeight: 'bold' }}>Avg. Stress</Text></View>
-        <View style={styles.flatlistHeaderTextContainer}><Text style={{ fontWeight: 'bold' }}>Ref. Stress</Text></View>
-        <View style={styles.flatlistHeaderTextContainer}></View>
+        <View style={{...styles.flatlistHeaderTextContainer, flex:2}}><Text style={{ fontWeight: 'bold' }}>Avg. Stress</Text></View>
+        <View style={{...styles.flatlistHeaderTextContainer, flex:2}}><Text style={{ fontWeight: 'bold' }}>Ref. Stress</Text></View>
+        <View style={{...styles.flatlistHeaderTextContainer, flex:1}} ></View>
       </View>
     )
   }
 
-  const renderAppsItem = ({ item, index }: { item: any, index: number }) => (
-    <Link href={{ pathname: "/screenTime", params: { date: Date.now(), image: tinderImage, name: item.name } }} asChild>
-      <Pressable style={styles.flatlistItemContainer}>
-        <View style={{ flex: 1, backgroundColor: 'transparent', justifyContent: 'center' }}><Image source={tinderImage} style={styles.imageStyle} /></View>
-        <View style={{ flex: 4, backgroundColor: 'transparent', justifyContent: 'center' }}><Text>{item.name}</Text></View>
-        <View style={styles.flatlistItemTextContainer}><Text>{Math.round(item.averageStress)}</Text></View>
-        <View style={styles.flatlistItemTextContainer}><Text>{Math.round(item.referenceStress)}</Text></View>
-        <View style={styles.flatlistItemTextContainer}>
+  const renderAppsItem = ({ item, index }: { item: AppAnalysisData, index: number }) => (
+      <Pressable style={styles.flatlistItemContainer} onPress={() => {router.navigate({pathname:"/screenTime", params: {name: item.name, time: Date.now()}})}}>
+        <AppIcon packageName={item.name}/>
+        <View style={{flex: 4, backgroundColor: 'transparent', justifyContent: 'center' }}><Text> {getNameFromName(item.name)}</Text></View>
+        <View style={{...styles.flatlistItemTextContainer, flex:2}}><Text>{item.averageStress != 0 ? Math.round(item.averageStress) : ""}</Text></View>
+        <View style={{...styles.flatlistItemTextContainer, flex:2}}><Text>{item.referenceStress != 0 ? Math.round(item.referenceStress) : "" }</Text></View>
+        <View style={{...styles.flatlistItemTextContainer, flex:1}}>
           <FontAwesome5
             name="arrow-right"
             size={18}
@@ -72,7 +70,6 @@ export default function ApplicationsScreen() {
           />
         </View>
       </Pressable>
-    </Link>
   )
 
   function renderAppAnalysisTable() {
@@ -84,8 +81,12 @@ export default function ApplicationsScreen() {
           data={appAnalysisData}
           renderItem={renderAppsItem}
           ListHeaderComponent={renderAppsHeader}
+          stickyHeaderIndices={[0]}
+          refreshControl={
+                <RefreshControl refreshing={refreshing} onRefresh={() => setCurrentDate(new Date())} />
+              }
           ListHeaderComponentStyle={styles.flatlistHeaderTextContainer}
-          stickyHeaderIndices={[0]} />
+           />
       </Card>;
     } else {
       return <AnalysisLoading />;
@@ -93,20 +94,10 @@ export default function ApplicationsScreen() {
   }
 
   return (
-    <SafeAreaView>
-      <FlatList
-        data={['Apps']}
-        renderItem={({ item }) => (
-          <TabContainer headerText={item} noScroll>
-            {renderAppAnalysisTable()}
-          </TabContainer>
-        )}
-        keyExtractor={(item) => item}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={() => setCurrentDate(new Date())} />
-        }
-      />
-    </SafeAreaView>
+    <View style={{flex:1}}>
+      <Text style={styles.headerStyle}> Apps </Text>
+      {renderAppAnalysisTable()}
+    </View>
   );
 }
 
@@ -127,23 +118,17 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   flatlistHeaderTextContainer: {
-    flex: 3,
     backgroundColor: '#3B3B3B',
     alignItems: 'center',
     justifyContent: 'center',
     paddingTop: 3,
     paddingBottom: 3,
   },
-  containerLabelsContainer: {
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  containerLabelsText: {
+  headerStyle: {
+    color: "white",
     fontSize: 30,
-    padding: 30,
-  },
-  imageStyle: {
-    width: 24,
-    height: 24,
-  },
+    alignSelf: "center",
+    padding: 20,
+    textAlign: "center"
+  }
 });

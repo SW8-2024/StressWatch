@@ -23,6 +23,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#555555',
         borderRadius: 10,
         overflow: 'hidden',
+        flex: 1,
     },
     titleStyle: {
         color: "white",

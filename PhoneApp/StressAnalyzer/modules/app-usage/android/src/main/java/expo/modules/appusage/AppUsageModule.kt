@@ -17,12 +17,12 @@ import android.util.Base64
 
 import java.time.ZonedDateTime
 import java.time.LocalDate
-import java.time.ZoneId 
+import java.time.ZoneId
 import java.time.Instant
 
 class AppUsageModule : Module() {
 
-  // Helper class to keep track of all of the stats 
+  // Helper class to keep track of all of the stats
   // class Stat(val packageName: String, val totalTime: Long, val startTimes: List<ZonedDateTime>, val endTimes: List<ZonedDateTime>)
 
   // Each module class must implement the definition function. The definition consists of components
@@ -38,7 +38,7 @@ class AppUsageModule : Module() {
     Events("usageDataEvent")
 
     // Returns usagestats in interval and both asyncronously returns the result and sends a usageDataEvent with the data.
-    Function("getUsageStatsAsync") { start: Long, end: Long -> 
+    Function("getUsageStatsAsync") { start: Long, end: Long ->
       val hasPermission = hasUsageStatsPermission()
       val retStats = mutableListOf<Pair<String,Long>>()
       if (hasPermission){
@@ -61,16 +61,26 @@ class AppUsageModule : Module() {
       return@Function ret
     }
 
+    Function ("getAppName") {packageName : String ->
+      val packageManager = context.getPackageManager();
+      try{
+        val info = packageManager.getApplicationInfo(packageName, PackageManager.GET_META_DATA);
+        val name = packageManager.getApplicationLabel(info);
+        return@Function name;
+      }catch(e : Exception){
+        return@Function "";
+      }
+    }
     Function("getAppIcon") {packageName : String ->
       val packageManager = context.getPackageManager();
       try{
         val drawableIcon = packageManager.getApplicationIcon(packageName);
         val bitmapIcon =  drawableToBitmap(drawableIcon);
-        val base64Icon = convertToBase64(bitmapIcon);      
+        val base64Icon = convertToBase64(bitmapIcon);
         return@Function base64Icon;
       }catch(e : Exception){
         return@Function "";
-      }    
+      }
     }
     /**
    * Returns the relevant events in the given time interval
@@ -79,15 +89,15 @@ class AppUsageModule : Module() {
       if (!hasUsageStatsPermission()){
         return@Function mapOf("success" to false)
       }
-      
+
       //If query end is in the future set the end to now.
       val start = startTime
       var end = endTime
       val now : Long = Instant.now().toEpochMilli()
-      if (end > now){ 
+      if (end > now){
         end = now
       }
-      // This will keep a map of all of the events per package name 
+      // This will keep a map of all of the events per package name
       val sortedEvents = mutableMapOf<String, MutableList<UsageEvents.Event>>()
       // Query the list of events that has happened within that time frame
       val usageStatsManager = context.getSystemService(Context.USAGE_STATS_SERVICE) as UsageStatsManager
@@ -133,15 +143,15 @@ class AppUsageModule : Module() {
             }
         }
         val elem =
-        stats.add(mapOf(          
+        stats.add(mapOf(
           "packageName" to packageName,
           "startTimes" to startTimes,
-          "endTimes" to endTimes,          
+          "endTimes" to endTimes,
         ))
     }
     val ret = mapOf(
-          "success" to true, 
-          "packageTimes" to stats,          
+          "success" to true,
+          "packageTimes" to stats,
           "queryStart" to start,
           "queryEnd" to end
         )
@@ -151,7 +161,7 @@ class AppUsageModule : Module() {
 
   private val context
       get() = requireNotNull(appContext.reactContext)
-  
+
   private fun drawableToBitmap(drawable : Drawable) : Bitmap {
     var bitmap : Bitmap;
     if (drawable is BitmapDrawable) {
@@ -170,14 +180,14 @@ class AppUsageModule : Module() {
     drawable.draw(canvas);
     return bitmap;
   }
-  
+
   //Checks whether we have usagestats permission
-  private fun hasUsageStatsPermission() : Boolean{    
+  private fun hasUsageStatsPermission() : Boolean{
     var granted = false
     val appOps = context
             .getSystemService(Context.APP_OPS_SERVICE) as AppOpsManager
-    val mode = appOps.unsafeCheckOpNoThrow(AppOpsManager.OPSTR_GET_USAGE_STATS, 
-             android.os.Process.myUid(), context.getPackageName())    
+    val mode = appOps.unsafeCheckOpNoThrow(AppOpsManager.OPSTR_GET_USAGE_STATS,
+             android.os.Process.myUid(), context.getPackageName())
     if (mode == AppOpsManager.MODE_DEFAULT) {
         granted = (context.checkCallingOrSelfPermission(android.Manifest.permission.PACKAGE_USAGE_STATS) == PackageManager.PERMISSION_GRANTED)
     } else {

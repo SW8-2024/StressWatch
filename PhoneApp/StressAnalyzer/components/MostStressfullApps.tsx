@@ -1,6 +1,7 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { BarChart, barDataItem as BarDataItem } from "react-native-gifted-charts";
+import { AppIcon } from './AppIcon';
 
 
 interface Props {
@@ -14,8 +15,9 @@ const relaxingAppColor = "#559D49";
 export default function MostStressfullApps({ stressByApp, stressAverage }: Props): JSX.Element {
   const coloredData = stressByApp.map((v, i) => ({
     value: v.value,
+    labelComponent: () => (<AppIcon packageName={v.name}/>),
+    frontColor: v.value > stressAverage ? stressfulAppColor : relaxingAppColor,
     label: v.name,
-    frontColor: v.value > stressAverage ? stressfulAppColor : relaxingAppColor
   }));
 
   return (
@@ -33,7 +35,6 @@ export default function MostStressfullApps({ stressByApp, stressAverage }: Props
         onPress={(item: BarDataItem, index: number) => console.log('item', item)}
         labelWidth={60}
         labelsExtraHeight={50}
-        rotateLabel
         showReferenceLine1
         referenceLine1Position={stressAverage}
         referenceLine1Config={{
