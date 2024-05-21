@@ -26,7 +26,7 @@ export function mapAppAnalysisPerDate(data: RemoteAppAnalysisByDate): AppAnalysi
   if (usageParsed?.length != 4) {
     throw new Error("Could not parse appAnalysisByDate data, got: " + JSON.stringify(usageParsed));
   }
-  //Query is wrong by one day
+  //Query response is wrong by one day
   return {
     date: new Date(Date.parse(data.dateTime) + TIME.DAY),
     averageStress: data.dayAverageStress,
