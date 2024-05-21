@@ -47,8 +47,6 @@ export default function SettingsScreen() {
           bgColor='green'
           action={async () => {setAuthResponse(await authorize(token)); onChangeToken('')}}/>
         <Text style={styles.responseText}>{authResponse}</Text>
-      </View>
-      <View style={styles.logoutBtn}>
         <Button
           text='Log out'
           textColor='white'

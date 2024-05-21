@@ -33,7 +33,6 @@ export async function getAppAnalysisPerDayByApp(date: Date, packageName: string)
   const endpointUrl: string = serverLocation + "api/DataAnalysis/per-app-per-day-usage-analysis";
   const response: Response = await fetchWithAuth(`${endpointUrl}?endOfDay=${date.toISOString()}&appName=${packageName}`);
   if (response.status != 200) {
-    console.log(response);
     throw new Error(`Got status ${response.status} while trying to get appAnalaysisPerDateByApp`)
   }
   return await response.json();
@@ -80,7 +79,6 @@ export async function getStressMetrics(date: Date): Promise<StressMetrics> {
 }
 
 export async function sendUsageData(data: EventUsageTransformedData[]) {
-  console.log("Getting usage data")
   const url: string = serverLocation + "api/DataCollection/app-usage";
   let response: Response = await fetchWithAuth(url, {
     method: 'POST',

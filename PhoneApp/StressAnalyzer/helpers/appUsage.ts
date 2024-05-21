@@ -50,10 +50,11 @@ export const getAppIconFromName = (packageName : string) : string => {
 }
 
 export const getNameFromName = (packageName : string) : string => {
-    if (packageName == ""){
+    let name = getAppName(packageName);
+    if (name == ""){
         return packageName;
     }else{
-        return getAppName(packageName);
+        return name;
     }
 }
 

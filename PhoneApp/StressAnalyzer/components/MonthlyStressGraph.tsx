@@ -32,7 +32,7 @@ export default function MonthlyStressGraph({ dataPoints, stressAverage }: Props)
         xAxisLabelTextStyle={{ color: 'white' }}
         xAxisLabelsVerticalShift={6}
         spacing={2}
-        onPress={(item: BarDataItem, index: number) => console.log('item', item)}
+        disablePress={true}
         labelWidth={40}
         showReferenceLine1
         referenceLine1Position={stressAverage}

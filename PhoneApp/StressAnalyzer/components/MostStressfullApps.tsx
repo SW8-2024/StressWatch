@@ -32,7 +32,7 @@ export default function MostStressfullApps({ stressByApp, stressAverage }: Props
         spacing={5}
         barBorderColor={'black'}
         barBorderWidth={2}
-        onPress={(item: BarDataItem, index: number) => console.log('item', item)}
+        disablePress={true}
         labelWidth={60}
         labelsExtraHeight={50}
         showReferenceLine1

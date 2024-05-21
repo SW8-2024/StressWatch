@@ -8,13 +8,14 @@ import { AppIcon } from '@/components/AppIcon';
 import { getNameFromName } from '@/helpers/appUsage';
 import { getAppAnalysisByDayByApp } from '@/helpers/Database';
 import { mapAppAnalysisByDateAndApp, mapRemoteGraphToInternal } from '@/helpers/mappers';
+import AnalysisLoading from '@/components/AnalysisLoading';
 
 export default function AppDateSummaryScreen(){
   const params = useLocalSearchParams<{ date: string, name: string }>();
   const date = new Date(Number(params?.date ?? Date.now()));
   const name = params?.name ?? "";
   const [error, setError] = useState<string | null>(null);
-  const [currentDate, setCurrentDate] = useState<Date>(new Date());//Weirdge
+  const [update, setUpdate] = useState<Boolean>(false);
   const [refreshing, setRefreshing] = useState(false);
   const [graphData, setGraphData] = useState<GraphDataForAppAndDate[] | null>(null)
   const [tableData, setTableData] = useState<AppAnalysisByDayAndApp[] | null>(null)
@@ -27,11 +28,12 @@ export default function AppDateSummaryScreen(){
         let endOfDay = date;
         endOfDay.setHours(23,59,59,999);
         let data = await getAppAnalysisByDayByApp(endOfDay, name);
-        console.log(data.appUsageAnalysis)
-        let graphData = data.highResolutionStress.map(mapRemoteGraphToInternal)
-        graphData[graphData.length - 1].label = "24"
-        setGraphData(graphData);
-        setTableData(data.appUsageAnalysis.map(mapAppAnalysisByDateAndApp));
+        console.log(data)
+        let gData = data.highResolutionStress.map(mapRemoteGraphToInternal)
+        gData[gData.length - 1].label = "24"
+        setGraphData(gData);
+        console.log(gData)
+        setTableData(data.appUsageAnalysis.map(mapAppAnalysisByDateAndApp).sort((a,b) => a.startTime.valueOf() - b.startTime.valueOf()));
       } catch (e) {
         setError((e ?? "unknown error").toString());
       } finally {
@@ -44,13 +46,17 @@ export default function AppDateSummaryScreen(){
       setError(null);
       cancel = true;
     };
-  }, [currentDate]);
+  }, [update]);
 
   const formatTime = (hours: number, minutes: number, seconds: number) => {
-    return hours + "h " + minutes + "m";
+    if (hours + minutes == 0){
+      return seconds + "s";
+    }else{
+      return hours + "h " + minutes + "m";
+    }
   }
   const formatDate = (d: Date) => {
-    return d.getHours() + "/" + d.getMinutes();
+    return ("0" + d.getHours()).slice(-2) + ":" + ("0" + d.getMinutes()).slice(-2);
   }
 
   function renderGraph() {
@@ -59,10 +65,11 @@ export default function AppDateSummaryScreen(){
       <Card>
         <View style={styles.containerLabelsContainer}><Text style={styles.dateLabel}>{date.toLocaleDateString()}</Text></View>
         <BarChart
-          data={graphData ?? [{value:55}]}
+          data={graphData}
           cappedBars
+          disablePress={true}
           capColor={'white'}
-          capThickness={0}
+          capThickness={10}
           barWidth={3}
           roundedBottom={false}
           yAxisColor={'white'}
@@ -90,11 +97,10 @@ export default function AppDateSummaryScreen(){
   const renderAppsHeader = () => {
     return (
       <View style={styles.flatlistItemContainer}>
-        <View style={{...styles.flatlistHeaderTextContainer, flex: 3 }}><Text style={{ fontWeight: 'bold' }}>Opened</Text></View>
-        <View style={{...styles.flatlistHeaderTextContainer, flex: 2 }}><Text style={{ fontWeight: 'bold' }}>App avg.</Text></View>
-        <View style={{...styles.flatlistHeaderTextContainer, flex: 2 }}><Text style={{ fontWeight: 'bold' }}>Ref. stress</Text></View>
-        <View style={{...styles.flatlistHeaderTextContainer, flex: 2 }}><Text style={{ fontWeight: 'bold' }}>Usage</Text></View>
-        <View style={{...styles.flatlistHeaderTextContainer, flex: 1 }}></View>
+        <View style={{...styles.flatlistHeaderTextContainer, flex: 1 }}><Text style={{ fontWeight: 'bold' }}>Opened</Text></View>
+        <View style={{...styles.flatlistHeaderTextContainer, flex: 1 }}><Text style={{ fontWeight: 'bold' }}>App avg.</Text></View>
+        <View style={{...styles.flatlistHeaderTextContainer, flex: 1 }}><Text style={{ fontWeight: 'bold' }}>Ref. stress</Text></View>
+        <View style={{...styles.flatlistHeaderTextContainer, flex: 1 }}><Text style={{ fontWeight: 'bold' }}>Usage</Text></View>
       </View>
     )
   }
@@ -119,28 +125,38 @@ export default function AppDateSummaryScreen(){
   }
 
   function renderAnalysisTable () {
-  return <Card noPadding>
-    <FlatList
-      data={tableData ?? []}
-      renderItem={renderScreenTimeItem}
-      ListHeaderComponent={renderAppsHeader}
-      ListHeaderComponentStyle={styles.flatlistHeaderTextContainer}
-      refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={() => setCurrentDate(new Date())} />
-      }
-      stickyHeaderIndices={[0]}/>
-    </Card>;
+      return <Card noPadding>
+      <FlatList
+        data={tableData}
+        renderItem={renderScreenTimeItem}
+        ListHeaderComponent={renderAppsHeader}
+        ListHeaderComponentStyle={styles.flatlistHeaderTextContainer}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={() => setUpdate(!update)} />
+        }
+        stickyHeaderIndices={[0]}/>
+      </Card>;
   }
 
+
+  function renderPage () {
+    if (graphData == null && tableData == null){
+      return <AnalysisLoading/>;
+    }else{
+      return <View style={{flex:1}}>
+      {renderGraph()}
+      <View style={{paddingBottom:5, paddingTop:5}}></View>
+      {renderAnalysisTable()}
+      </View>
+    }
+  }
   return(
     <View style={{flex:1}}>
     <View style={styles.mainHeader}>
       <AppIcon packageName={name}/>
       <Text style={styles.headerStyle}> {getNameFromName(name)} </Text>
       </View>
-      {renderGraph()}
-      <View style={{paddingBottom:5, paddingTop:5}}></View>
-      {renderAnalysisTable()}
+      {renderPage()}
   </View>);
 }
 

@@ -102,7 +102,7 @@ declare global {
         value : number,
         frontColor : ColorValue,
         label : string,
-        cap : boolean,
+        capColor : ColorValue,
     }
 
     interface RemoteGraphDataForAppAndDate {
@@ -121,7 +121,7 @@ declare global {
     }
 
     interface RemoteAppAnalysisByDayAndApp {
-        startTime: string;
+        appUsageStart: string;
         averageStress: number;
         referenceStress: number;
         usage: string;

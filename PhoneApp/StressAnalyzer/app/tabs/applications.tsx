@@ -28,7 +28,13 @@ export default function ApplicationsScreen() {
       try {
         let appAnalysis = await getAppAnalysis();
         if (!cancel) {
-          setAppAnalysisData(appAnalysis.appUsageAnalysis.map(mapAppAnalysisData));
+          setAppAnalysisData(appAnalysis.appUsageAnalysis.map(mapAppAnalysisData).sort(
+            (a, b) => {
+              let aName = a.name.toUpperCase();
+              let bName = b.name.toUpperCase();
+              return aName == bName ? 0 : aName < bName ? -1 : 1;
+            })
+          )
         }
       } catch (e) {
         setError((e ?? "unknown error").toString());

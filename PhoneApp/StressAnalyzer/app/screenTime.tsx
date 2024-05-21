@@ -8,6 +8,7 @@ import { getAppAnalysisPerDayByApp } from '@/helpers/Database';
 import { mapAppAnalysisPerDate } from '@/helpers/mappers';
 import Card from '@/components/Card';
 import { getNameFromName } from '@/helpers/appUsage';
+import AnalysisLoading from '@/components/AnalysisLoading';
 
 
 export default function ScreenTimeScreen() {
@@ -31,7 +32,6 @@ export default function ScreenTimeScreen() {
   }
 
   useEffect(() => {
-    console.log(params);
     let cancel = false;
     setRefreshing(true);
     (async () => {
@@ -40,7 +40,7 @@ export default function ScreenTimeScreen() {
         endOfCurrentDate.setHours(23,59,59,999);
         let appAnalysis = await getAppAnalysisPerDayByApp(endOfCurrentDate, name);
         if (!cancel) {
-          setScreenTimeData(appAnalysis.appUsageForAppAndDays.map(mapAppAnalysisPerDate));
+          setScreenTimeData(appAnalysis.appUsageForAppAndDays.map(mapAppAnalysisPerDate).sort((a, b) => b.date.valueOf() - a.date.valueOf()));
         }
       } catch (e) {
         setError((e ?? "unknown error").toString());
@@ -98,7 +98,8 @@ export default function ScreenTimeScreen() {
   }
 
 function renderAppAnalysisTable() {
-  return <Card noPadding>
+  if (screenTimeData != null){
+    return <Card noPadding>
     <FlatList
       data={screenTimeData}
       renderItem={renderScreenTimeItem}
@@ -109,6 +110,10 @@ function renderAppAnalysisTable() {
       }
       stickyHeaderIndices={[0]}/>
     </Card>;
+  }else{
+    return <AnalysisLoading/>
+  }
+
 }
 
   return (
