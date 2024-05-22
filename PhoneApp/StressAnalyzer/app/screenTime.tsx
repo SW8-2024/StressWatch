@@ -117,7 +117,7 @@ function renderAppAnalysisTable() {
 }
 
   return (
-    <View style={{flex:1}}>
+    <View style={{flex:1, padding:20}}>
       <View style={styles.mainHeader}>
         <AppIcon packageName={name}/>
         <Text style={styles.headerStyle}> {getNameFromName(name)} </Text>

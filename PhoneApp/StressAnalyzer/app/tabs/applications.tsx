@@ -100,7 +100,7 @@ export default function ApplicationsScreen() {
   }
 
   return (
-    <View style={{flex:1}}>
+    <View style={{flex:1, padding:20}}>
       <Text style={styles.headerStyle}> Apps </Text>
       {renderAppAnalysisTable()}
     </View>
