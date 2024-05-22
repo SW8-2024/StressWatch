@@ -58,10 +58,7 @@ declare global {
     interface AppAnalysisData {
         name: string;
         averageStress: number;
-        referenceStress: string;
-        usageHours: number;
-        usageMinutes: number;
-        usageSeconds: number;
+        referenceStress: number;
     }
 
     interface RemoteBreakDownData {
@@ -73,7 +70,7 @@ declare global {
     interface RemoteAppUsageAnalysis {
         name: string;
         averageStress: number;
-        referenceStress: string;
+        referenceStress: number;
         usage: string;
     }
 
@@ -81,4 +78,57 @@ declare global {
         appUsageAnalysis: RemoteAppUsageAnalysis[]
     }
 
+    interface AppAnalysisByDateData {
+        date: Date;
+        averageStress: number;
+        referenceStress: number;
+        usageHours: number;
+        usageMinutes: number;
+        usageSeconds: number;
+    }
+
+    interface RemoteAppAnalysisByDateData {
+        appUsageForAppAndDays: RemoteAppAnalysisByDate[];
+    }
+
+    interface RemoteAppAnalysisByDate {
+        dateTime: string;
+        dayReferenceStress: number;
+        dayAverageStress: number;
+        totalUsage: string;
+    }
+
+    interface GraphDataForAppAndDate {
+        value : number,
+        frontColor : ColorValue,
+        label : string,
+        capColor : ColorValue,
+    }
+
+    interface RemoteGraphDataForAppAndDate {
+        averageStress: number;
+        dateTime: string;
+        appOpen: boolean;
+    }
+
+    interface AppAnalysisByDayAndApp {
+        startTime: Date;
+        averageStress: number;
+        referenceStress: number;
+        usageHours: number;
+        usageMinutes: number;
+        usageSeconds: number;
+    }
+
+    interface RemoteAppAnalysisByDayAndApp {
+        appUsageStart: string;
+        averageStress: number;
+        referenceStress: number;
+        usage: string;
+    }
+
+    interface RemoteAnalysisForDayAndAppResponse {
+        highResolutionStress: RemoteGraphDataForAppAndDate[];
+        appUsageAnalysis: RemoteAppAnalysisByDayAndApp[];
+    }
 }

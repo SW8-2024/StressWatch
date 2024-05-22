@@ -17,6 +17,10 @@ export function getAppIcon(packageName: string) {
   return AppUsageModule.getAppIcon(packageName);
 }
 
+export function getAppName(packageName: string) {
+  return AppUsageModule.getAppName(packageName);
+}
+
 const emitter = new EventEmitter(AppUsageModule ?? NativeModulesProxy.AppUsage);
 //There is no typechecking that the event conforms to the given type
 export function addUsageDataListener(listener: (event: UsageDataEvent) => void): Subscription {

@@ -1,6 +1,7 @@
 import { TIME } from '@/constants/Time';
-import { getUsageStatsAsync, addUsageDataListener, getEventStatsInInterval, getAppIcon } from '@/modules/app-usage';
+import { getUsageStatsAsync, addUsageDataListener, getEventStatsInInterval, getAppIcon, getAppName } from '@/modules/app-usage';
 import { sendUsageData } from './Database';
+import { start } from 'repl';
 
 // Idea is that the database is updated with each call
 export const getEventDataByMilli = async (startTime : number, endTime : number) => {
@@ -46,6 +47,15 @@ export const printEventDataByDate = async (startDate : Date, endDate : Date) => 
 
 export const getAppIconFromName = (packageName : string) : string => {
     return getAppIcon(packageName);
+}
+
+export const getNameFromName = (packageName : string) : string => {
+    let name = getAppName(packageName);
+    if (name == ""){
+        return packageName;
+    }else{
+        return name;
+    }
 }
 
 const _getEventData = async (startTime : number, endTime : number) => {

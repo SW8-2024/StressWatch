@@ -1,15 +1,11 @@
+import { TIME } from "@/constants/Time";
+import { valueToColor } from "./graphHelpers";
+
 export function mapAppAnalysisData(data: RemoteAppUsageAnalysis): AppAnalysisData {
-  let usageParsed = data.usage.match(/^([0-9]+):([0-9]+):([0-9]+)\.[0-9]+$/);
-  if (usageParsed?.length != 4) {
-    throw new Error("Could not parse app analysis data, got: " + JSON.stringify(usageParsed));
-  }
   return {
     name: data.name,
     averageStress: data.averageStress,
     referenceStress: data.referenceStress,
-    usageHours: Number(usageParsed[1]),
-    usageMinutes: Number(usageParsed[2]),
-    usageSeconds: Number(usageParsed[3])
   };
 }
 
@@ -22,4 +18,57 @@ export function mapBreakDownDataToInternal(data: RemoteBreakDownData): BreakDown
     })),
     stressByApp: data.stressByApp
   };
+}
+
+export function mapAppAnalysisPerDate(data: RemoteAppAnalysisByDate): AppAnalysisByDateData {
+
+  let usageParsed = data.totalUsage.match(/^([0-9]+):([0-9]+):([0-9]+)\.[0-9]+$/);
+  if (usageParsed?.length != 4) {
+    throw new Error("Could not parse appAnalysisByDate data, got: " + JSON.stringify(usageParsed));
+  }
+  //Query response is wrong by one day
+  return {
+    date: new Date(Date.parse(data.dateTime) + TIME.DAY),
+    averageStress: data.dayAverageStress,
+    referenceStress: data.dayReferenceStress,
+    usageHours: Number(usageParsed[1]),
+    usageMinutes: Number(usageParsed[2]),
+    usageSeconds: Number(usageParsed[3]),
+  }
+}
+
+export function mapRemoteGraphToInternal(data: RemoteGraphDataForAppAndDate): GraphDataForAppAndDate {
+  let stress = data.averageStress;
+  let label = "";
+  let date = new Date(Date.parse(data.dateTime));
+  //We get data in 15 minute intervals so this finds the first interval of every fourth hour
+  if (date.getHours() % 4 == 0 && date.getMinutes() <= 15){
+    label = date.getHours().toString();
+    if (label.length == 1){
+      label = "0" + label;
+    }
+  }
+
+  return {
+    value: stress ?? 0,
+    label: label,
+    capColor: data.appOpen ? "white" : valueToColor(stress),
+    frontColor: valueToColor(stress)
+  }
+}
+
+export function mapAppAnalysisByDateAndApp(data: RemoteAppAnalysisByDayAndApp): AppAnalysisByDayAndApp {
+  let usageParsed = data.usage.match(/^([0-9]+):([0-9]+):([0-9]+)\.[0-9]+$/);
+  if (usageParsed?.length != 4) {
+    throw new Error("Could not parse appAnalysisByDate data, got: " + JSON.stringify(usageParsed));
+  }
+
+  return {
+    startTime: new Date(Date.parse(data.appUsageStart)),
+    averageStress: data.averageStress,
+    referenceStress: data.referenceStress,
+    usageHours: Number(usageParsed[1]),
+    usageMinutes: Number(usageParsed[2]),
+    usageSeconds: Number(usageParsed[3]),
+  }
 }

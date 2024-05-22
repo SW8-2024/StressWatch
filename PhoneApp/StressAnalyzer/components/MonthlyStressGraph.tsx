@@ -1,31 +1,17 @@
+import { valueToColor } from '@/helpers/graphHelpers';
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { View } from 'react-native';
 import { BarChart, barDataItem as BarDataItem } from "react-native-gifted-charts";
 
-const valueToColor = (value: number): string => {
-  if (value < 44) {
-    return '#36890E'
-  }
-  else if (value < 60) {
-    return '#CFA613'
-  }
-  else if (value < 80) {
-    return '#AF2C03'
-  }
-  else {
-    return '#AF0303'
-  }
+interface Props {
+  dataPoints: StressDataPoint[];
+  stressAverage: number;
 }
 
 const dateFormatter = new Intl.DateTimeFormat(undefined, {
   day: '2-digit',
   month: '2-digit'
 });
-
-interface Props {
-  dataPoints: StressDataPoint[];
-  stressAverage: number;
-}
 
 export default function MonthlyStressGraph({ dataPoints, stressAverage }: Props): JSX.Element {
   const coloredData = dataPoints.map((v, i) => ({
@@ -46,7 +32,7 @@ export default function MonthlyStressGraph({ dataPoints, stressAverage }: Props)
         xAxisLabelTextStyle={{ color: 'white' }}
         xAxisLabelsVerticalShift={6}
         spacing={2}
-        onPress={(item: BarDataItem, index: number) => console.log('item', item)}
+        disablePress={true}
         labelWidth={40}
         showReferenceLine1
         referenceLine1Position={stressAverage}

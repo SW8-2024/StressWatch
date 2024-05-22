@@ -29,6 +29,24 @@ async function fetchWithAuth(url: string, options?: RequestInit | undefined): Pr
   return fetch(url, options); ``
 }
 
+export async function getAppAnalysisPerDayByApp(date: Date, packageName: string): Promise<RemoteAppAnalysisByDateData> {
+  const endpointUrl: string = serverLocation + "api/DataAnalysis/per-app-per-day-usage-analysis";
+  const response: Response = await fetchWithAuth(`${endpointUrl}?endOfDay=${date.toISOString()}&appName=${packageName}`);
+  if (response.status != 200) {
+    throw new Error(`Got status ${response.status} while trying to get appAnalaysisPerDateByApp`)
+  }
+  return await response.json();
+}
+
+export async function getAppAnalysisByDayByApp(date: Date, packageName: string): Promise<RemoteAnalysisForDayAndAppResponse> {
+  const endpointUrl: string = serverLocation + "api/DataAnalysis/analysis-for-day-and-app";
+  const response: Response = await fetchWithAuth(`${endpointUrl}?endOfDay=${date.toISOString()}&appName=${packageName}`);
+  if (response.status != 200) {
+    throw new Error(`Got status ${response.status} while trying to get appAnalaysisByDateByApp`)
+  }
+  return await response.json();
+}
+
 export async function getBreakdown(date: Date): Promise<RemoteBreakDownData> {
   const endpointUrl: string = serverLocation + "api/DataAnalysis/breakdown";
   const response: Response = await fetchWithAuth(`${endpointUrl}?date=${date.toISOString()}`);
@@ -61,7 +79,6 @@ export async function getStressMetrics(date: Date): Promise<StressMetrics> {
 }
 
 export async function sendUsageData(data: EventUsageTransformedData[]) {
-  console.log("Getting usage data")
   const url: string = serverLocation + "api/DataCollection/app-usage";
   let response: Response = await fetchWithAuth(url, {
     method: 'POST',
@@ -165,7 +182,7 @@ export async function authorize(token: string): Promise<string> {
       "token": token
     }),
   })
-  
+
   if (response.status == 200){
     return `${response.status} Authorized`;
   } else {
