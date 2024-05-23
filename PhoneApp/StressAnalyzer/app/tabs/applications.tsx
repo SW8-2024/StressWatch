@@ -65,7 +65,7 @@ export default function ApplicationsScreen() {
   const renderAppsItem = ({ item, index }: { item: AppAnalysisData, index: number }) => (
       <Pressable style={styles.flatlistItemContainer} onPress={() => {router.navigate({pathname:"/screenTime", params: {name: item.name, time: Date.now()}})}}>
         <AppIcon packageName={item.name}/>
-        <View style={{flex: 4, backgroundColor: 'transparent', justifyContent: 'center' }}><Text> {getNameFromName(item.name)}</Text></View>
+        <View style={{flex: 4, backgroundColor: 'transparent', justifyContent: 'center' }}><Text numberOfLines={1}> {getNameFromName(item.name)}</Text></View>
         <View style={{...styles.flatlistItemTextContainer, flex:2}}><Text>{item.averageStress != 0 ? Math.round(item.averageStress) : ""}</Text></View>
         <View style={{...styles.flatlistItemTextContainer, flex:2}}><Text>{item.referenceStress != 0 ? Math.round(item.referenceStress) : "" }</Text></View>
         <View style={{...styles.flatlistItemTextContainer, flex:1}}>

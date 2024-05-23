@@ -7,7 +7,7 @@ export const AppIcon = function AppIcon({ packageName } : {packageName : string}
     if (icon == ""){
         return <View style={styles.backupIcon}/>
     }else{
-        return <Image style={styles.icon} source={{uri:`data:image/jpeg;base64, ${icon}`} } />
+        return <Image style={styles.icon} source={{uri:`data:image/png;base64, ${icon}`} } />
     }
 };
 

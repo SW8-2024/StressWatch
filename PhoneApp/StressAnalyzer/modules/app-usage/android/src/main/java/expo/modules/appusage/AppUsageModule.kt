@@ -198,7 +198,7 @@ class AppUsageModule : Module() {
 
   private fun convertToBase64(bm: Bitmap): String? {
         val baos = ByteArrayOutputStream()
-        bm.compress(Bitmap.CompressFormat.JPEG, 100, baos)
+        bm.compress(Bitmap.CompressFormat.PNG, 100, baos)
         val b = baos.toByteArray()
         return Base64.encodeToString(b, Base64.DEFAULT)
     }
